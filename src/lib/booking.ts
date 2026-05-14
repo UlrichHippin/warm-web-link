@@ -228,9 +228,12 @@ export const bookingFormSchema = z.object({
   whatsapp_number: z
     .string()
     .trim()
-    .min(7, "Enter your WhatsApp number with country code")
+    .min(8, "Enter your WhatsApp number in international format")
     .max(20)
-    .regex(/^\+?[0-9 ()-]{7,20}$/, "Please enter a valid phone number"),
+    .regex(
+      /^\+[1-9][0-9 ()-]{6,20}$/,
+      "Use international format starting with + and country code, e.g. +254708835235 or +4915756233913",
+    ),
   email: z.string().trim().email("Enter a valid email").max(200),
   property_type: z.enum(PROPERTY_TYPES, { message: "Select a property type" }),
   exact_address: z.string().trim().min(5, "Please add building, road and directions").max(1000),
@@ -254,18 +257,13 @@ export type BookingFormValues = z.infer<typeof bookingFormSchema>;
 // ----- WhatsApp message helpers -------------------------------------------
 
 /**
- * Normalize a Kenyan phone number for the wa.me URL format.
+ * Normalize a WhatsApp phone number for the wa.me URL format.
  * - Strips spaces, +, brackets and hyphens
- * - Leading "0" → "254"
- * - Leading "+254" or "254" → "254"
- * - Anything else: digits only (so non-KE international numbers still work)
+ * - Keeps the country code exactly as entered
+ * - Does NOT assume Kenya — supports any international number
  */
 export function normalizeWhatsAppNumber(input: string): string {
-  const digits = (input || "").replace(/[\s+()\-]/g, "").replace(/[^0-9]/g, "");
-  if (!digits) return "";
-  if (digits.startsWith("254")) return digits;
-  if (digits.startsWith("0")) return "254" + digits.slice(1);
-  return digits;
+  return (input || "").replace(/[\s+()\-]/g, "").replace(/[^0-9]/g, "");
 }
 
 export function waLink(number: string, message: string): string {
