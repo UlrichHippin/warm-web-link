@@ -38,13 +38,14 @@ import {
   paymentBadgeClass,
   statusBadgeClass,
 } from "@/lib/booking";
-import { RequireAdmin } from "./admin";
+import { RequireDashboardAccess } from "./admin";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/admin/")({
   component: () => (
-    <RequireAdmin>
+    <RequireDashboardAccess>
       <Dashboard />
-    </RequireAdmin>
+    </RequireDashboardAccess>
   ),
 });
 
@@ -76,6 +77,7 @@ const STATUS_CARDS: Array<{ key: string; label: string }> = [
 
 function Dashboard() {
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const [search, setSearch] = useState("");
   const [statusF, setStatusF] = useState<string>("all");
   const [payF, setPayF] = useState<string>("all");
@@ -140,11 +142,13 @@ function Dashboard() {
             <p className="text-xs text-muted-foreground">Booking requests</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/admin/settings">
-                <Settings className="mr-1 h-4 w-4" /> Settings
-              </Link>
-            </Button>
+            {isAdmin && (
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/admin/settings">
+                  <Settings className="mr-1 h-4 w-4" /> Settings
+                </Link>
+              </Button>
+            )}
             <Button variant="outline" size="sm" asChild>
               <a href="/" target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="mr-1 h-4 w-4" /> Public form
