@@ -37,8 +37,8 @@ function ThankYou() {
   const [tried, setTried] = useState(false);
 
   useEffect(() => {
-    // Best-effort fetch: if the project has a public read policy (it doesn't by default),
-    // this will hydrate the summary. Otherwise it silently no-ops.
+    // 1) Best-effort fetch from Supabase (no-op for public users due to RLS).
+    // 2) Fallback: read the sessionStorage cache written on submit.
     (async () => {
       const { data } = await supabase
         .from("booking_requests")
@@ -47,7 +47,16 @@ function ThankYou() {
         )
         .eq("request_id", requestId)
         .maybeSingle();
-      if (data) setBooking(data as BookingRow);
+      if (data) {
+        setBooking(data as BookingRow);
+      } else {
+        try {
+          const cached = sessionStorage.getItem(`fd-booking-${requestId}`);
+          if (cached) setBooking(JSON.parse(cached) as BookingRow);
+        } catch {
+          // ignore
+        }
+      }
       setTried(true);
     })();
   }, [requestId]);
