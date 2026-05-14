@@ -108,11 +108,23 @@ function Dashboard() {
     },
   });
 
-  const counts = useMemo(() => {
-    const c: Record<string, number> = {};
-    for (const r of data ?? []) c[r.status] = (c[r.status] ?? 0) + 1;
-    return c;
-  }, [data]);
+  // Separate query for the status cards so counts always reflect TOTALS,
+  // not the currently-filtered subset.
+  const { data: totals } = useQuery({
+    queryKey: ["bookings-totals"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("booking_requests")
+        .select("status")
+        .limit(5000);
+      if (error) throw error;
+      const c: Record<string, number> = {};
+      for (const r of data ?? []) c[r.status] = (c[r.status] ?? 0) + 1;
+      return c;
+    },
+    staleTime: 30_000,
+  });
+  const counts = totals ?? {};
 
   const signOut = async () => {
     await supabase.auth.signOut();
