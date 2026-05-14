@@ -268,7 +268,18 @@ export function normalizeWhatsAppNumber(input: string): string {
 
 export function waLink(number: string, message: string): string {
   const clean = normalizeWhatsAppNumber(number);
+  // IMPORTANT: always use the wa.me short format (never api.whatsapp.com/send),
+  // wa.me opens cleanly in Firefox/Safari/Chrome without COOP popup warnings.
   return `https://wa.me/${clean}?text=${encodeURIComponent(message)}`;
+}
+
+/**
+ * Build a wa.me URL for the FreshDream business WhatsApp number.
+ * Use this for header / CTA / share links. For per-customer messages
+ * (admin dashboard) use waLink(customerNumber, message) instead.
+ */
+export function createWhatsAppUrl(message = ""): string {
+  return waLink(WHATSAPP_NUMBER, message);
 }
 
 export function fmtKES(n: number | null | undefined): string {
