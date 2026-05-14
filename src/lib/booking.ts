@@ -172,7 +172,7 @@ export const bookingFormSchema = z.object({
   cleaning_package: z.enum(CLEANING_PACKAGES, { message: "Select a package" }),
   mattress_size: z.enum(MATTRESS_SIZES, { message: "Select a mattress size" }),
   number_of_mattresses: z.coerce.number().int().min(1, "At least 1").max(50),
-  addons: z.array(z.enum(ADDONS)).default([]),
+  addons: z.array(z.enum(ADDONS)),
   special_notes: z.string().trim().max(2000).optional().or(z.literal("")),
   preferred_date: z
     .string()
