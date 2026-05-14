@@ -80,6 +80,72 @@ export const APPOINTMENT_STATUS_OPTIONS = [
   "Completed",
 ] as const;
 
+// ----- Status badge colors -------------------------------------------------
+
+export function statusBadgeClass(s: string): string {
+  switch (s) {
+    case "New Request":
+      return "bg-blue-500/15 text-blue-700 border-blue-500/30 dark:text-blue-300";
+    case "WhatsApp Contact Pending":
+    case "Customer Contacted":
+      return "bg-sky-500/15 text-sky-700 border-sky-500/30 dark:text-sky-300";
+    case "Availability Confirmed":
+    case "Price Confirmed":
+      return "bg-indigo-500/15 text-indigo-700 border-indigo-500/30 dark:text-indigo-300";
+    case "Awaiting Payment":
+      return "bg-amber-500/15 text-amber-800 border-amber-500/40 dark:text-amber-300";
+    case "Payment Confirmed":
+      return "bg-emerald-500/15 text-emerald-700 border-emerald-500/30 dark:text-emerald-300";
+    case "Appointment Scheduled":
+    case "Cleaner Assigned":
+      return "bg-violet-500/15 text-violet-700 border-violet-500/30 dark:text-violet-300";
+    case "In Progress":
+      return "bg-cyan-500/20 text-cyan-800 border-cyan-500/40 dark:text-cyan-300";
+    case "Completed":
+      return "bg-emerald-600/20 text-emerald-800 border-emerald-600/40 dark:text-emerald-300";
+    case "Cancelled":
+      return "bg-red-500/15 text-red-700 border-red-500/30 dark:text-red-300";
+    case "Reschedule Requested":
+      return "bg-orange-500/15 text-orange-800 border-orange-500/30 dark:text-orange-300";
+    case "No Response":
+      return "bg-zinc-500/15 text-zinc-700 border-zinc-500/30 dark:text-zinc-300";
+    default:
+      return "bg-muted text-muted-foreground border-border";
+  }
+}
+
+export function paymentBadgeClass(s: string): string {
+  switch (s) {
+    case "Payment confirmed":
+      return "bg-emerald-500/15 text-emerald-700 border-emerald-500/30 dark:text-emerald-300";
+    case "Awaiting payment":
+      return "bg-amber-500/15 text-amber-800 border-amber-500/40 dark:text-amber-300";
+    case "Payment issue":
+      return "bg-red-500/15 text-red-700 border-red-500/30 dark:text-red-300";
+    case "Refunded":
+      return "bg-orange-500/15 text-orange-800 border-orange-500/30 dark:text-orange-300";
+    case "Not applicable":
+      return "bg-zinc-500/15 text-zinc-700 border-zinc-500/30 dark:text-zinc-300";
+    default:
+      return "bg-muted text-muted-foreground border-border";
+  }
+}
+
+export function appointmentBadgeClass(s: string): string {
+  switch (s) {
+    case "Confirmed":
+      return "bg-emerald-500/15 text-emerald-700 border-emerald-500/30 dark:text-emerald-300";
+    case "Rescheduled":
+      return "bg-orange-500/15 text-orange-800 border-orange-500/30 dark:text-orange-300";
+    case "Cancelled":
+      return "bg-red-500/15 text-red-700 border-red-500/30 dark:text-red-300";
+    case "Completed":
+      return "bg-emerald-600/20 text-emerald-800 border-emerald-600/40 dark:text-emerald-300";
+    default:
+      return "bg-muted text-muted-foreground border-border";
+  }
+}
+
 // ----- Pricing logic -------------------------------------------------------
 
 export function mattressPrice(size: string): number {
