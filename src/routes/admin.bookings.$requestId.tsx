@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ExternalLink, Loader2, MessageCircle, Save } from "lucide-react";
+import { ArrowLeft, ExternalLink, Loader2, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,10 @@ import {
   APPOINTMENT_STATUS_OPTIONS,
   PAYMENT_STATUS_OPTIONS,
   STATUS_OPTIONS,
+  appointmentBadgeClass,
   fmtKES,
+  paymentBadgeClass,
+  statusBadgeClass,
   waLink,
 } from "@/lib/booking";
 import { RequireAdmin } from "./admin";
