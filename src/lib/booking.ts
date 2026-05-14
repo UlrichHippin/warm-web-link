@@ -228,9 +228,12 @@ export const bookingFormSchema = z.object({
   whatsapp_number: z
     .string()
     .trim()
-    .min(7, "Enter your WhatsApp number with country code")
+    .min(8, "Enter your WhatsApp number in international format")
     .max(20)
-    .regex(/^\+?[0-9 ()-]{7,20}$/, "Please enter a valid phone number"),
+    .regex(
+      /^\+[1-9][0-9 ()-]{6,20}$/,
+      "Use international format starting with + and country code, e.g. +254708835235 or +4915756233913",
+    ),
   email: z.string().trim().email("Enter a valid email").max(200),
   property_type: z.enum(PROPERTY_TYPES, { message: "Select a property type" }),
   exact_address: z.string().trim().min(5, "Please add building, road and directions").max(1000),
