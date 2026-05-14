@@ -40,6 +40,7 @@ import {
   estimate,
   fmtKES,
   generateRequestId,
+  createWhatsAppUrl,
   type BookingFormValues,
 } from "@/lib/booking";
 
