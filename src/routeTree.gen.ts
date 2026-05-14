@@ -13,6 +13,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ThankYouRequestIdRouteImport } from './routes/thank-you.$requestId'
+import { Route as SettingsShareRouteImport } from './routes/settings.share'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminBookingsRequestIdRouteImport } from './routes/admin.bookings.$requestId'
@@ -37,6 +38,11 @@ const ThankYouRequestIdRoute = ThankYouRequestIdRouteImport.update({
   path: '/thank-you/$requestId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsShareRoute = SettingsShareRouteImport.update({
+  id: '/settings/share',
+  path: '/settings/share',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/settings/share': typeof SettingsShareRoute
   '/thank-you/$requestId': typeof ThankYouRequestIdRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/bookings/$requestId': typeof AdminBookingsRequestIdRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/settings/share': typeof SettingsShareRoute
   '/thank-you/$requestId': typeof ThankYouRequestIdRoute
   '/admin': typeof AdminIndexRoute
   '/admin/bookings/$requestId': typeof AdminBookingsRequestIdRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/settings/share': typeof SettingsShareRoute
   '/thank-you/$requestId': typeof ThankYouRequestIdRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/bookings/$requestId': typeof AdminBookingsRequestIdRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/login'
     | '/admin/settings'
+    | '/settings/share'
     | '/thank-you/$requestId'
     | '/admin/'
     | '/admin/bookings/$requestId'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin/login'
     | '/admin/settings'
+    | '/settings/share'
     | '/thank-you/$requestId'
     | '/admin'
     | '/admin/bookings/$requestId'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/login'
     | '/admin/settings'
+    | '/settings/share'
     | '/thank-you/$requestId'
     | '/admin/'
     | '/admin/bookings/$requestId'
@@ -112,6 +124,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  SettingsShareRoute: typeof SettingsShareRoute
   ThankYouRequestIdRoute: typeof ThankYouRequestIdRoute
 }
 
@@ -143,6 +156,13 @@ declare module '@tanstack/react-router' {
       path: '/thank-you/$requestId'
       fullPath: '/thank-you/$requestId'
       preLoaderRoute: typeof ThankYouRequestIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/share': {
+      id: '/settings/share'
+      path: '/settings/share'
+      fullPath: '/settings/share'
+      preLoaderRoute: typeof SettingsShareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/settings': {
@@ -188,6 +208,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  SettingsShareRoute: SettingsShareRoute,
   ThankYouRequestIdRoute: ThankYouRequestIdRoute,
 }
 export const routeTree = rootRouteImport
