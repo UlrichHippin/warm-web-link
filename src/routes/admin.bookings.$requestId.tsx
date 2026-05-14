@@ -376,15 +376,20 @@ function FieldSel({
   value,
   onChange,
   options,
+  saving,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   options: readonly string[];
+  saving?: boolean;
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">{label}</Label>
+      <div className="flex items-center justify-between">
+        <Label className="text-xs">{label}</Label>
+        {saving && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
+      </div>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger>
           <SelectValue />
