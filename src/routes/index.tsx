@@ -68,7 +68,7 @@ function PublicBookingPage() {
           <a
             href={`https://wa.me/254708835235`}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className="text-xs font-medium text-primary hover:underline"
           >
             WhatsApp us

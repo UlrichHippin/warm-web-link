@@ -146,7 +146,7 @@ function Dashboard() {
               </Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
-              <a href="/" target="_blank" rel="noreferrer">
+              <a href="/" target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="mr-1 h-4 w-4" /> Public form
               </a>
             </Button>

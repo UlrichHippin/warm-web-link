@@ -243,7 +243,7 @@ Thank you for choosing FreshDream Mattress Care. We would appreciate your feedba
                     <a
                       href={booking.upload_photo_url}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-primary hover:underline"
                     >
                       <ExternalLink className="h-3 w-3" /> Open photo
@@ -284,7 +284,7 @@ Thank you for choosing FreshDream Mattress Care. We would appreciate your feedba
                     onChange={(e) => setFinalPrice(e.target.value)}
                     className="max-w-[10rem]"
                   />
-                  <a href={msg(paymentMsg)} target="_blank" rel="noreferrer" className="flex-1">
+                  <a href={msg(paymentMsg)} target="_blank" rel="noopener noreferrer" className="flex-1">
                     <Button className="w-full bg-[#25D366] hover:bg-[#25D366]/90">
                       <MessageCircle className="mr-2 h-4 w-4" /> Send payment message
                     </Button>
@@ -408,7 +408,7 @@ function FieldSel({
 
 function WaButton({ href, label }: { href: string; label: string }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer">
+    <a href={href} target="_blank" rel="noopener noreferrer">
       <Button variant="outline" className="w-full justify-start">
         <MessageCircle className="mr-2 h-4 w-4 text-[#25D366]" /> {label}
       </Button>
