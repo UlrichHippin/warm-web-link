@@ -257,18 +257,13 @@ export type BookingFormValues = z.infer<typeof bookingFormSchema>;
 // ----- WhatsApp message helpers -------------------------------------------
 
 /**
- * Normalize a Kenyan phone number for the wa.me URL format.
+ * Normalize a WhatsApp phone number for the wa.me URL format.
  * - Strips spaces, +, brackets and hyphens
- * - Leading "0" → "254"
- * - Leading "+254" or "254" → "254"
- * - Anything else: digits only (so non-KE international numbers still work)
+ * - Keeps the country code exactly as entered
+ * - Does NOT assume Kenya — supports any international number
  */
 export function normalizeWhatsAppNumber(input: string): string {
-  const digits = (input || "").replace(/[\s+()\-]/g, "").replace(/[^0-9]/g, "");
-  if (!digits) return "";
-  if (digits.startsWith("254")) return digits;
-  if (digits.startsWith("0")) return "254" + digits.slice(1);
-  return digits;
+  return (input || "").replace(/[\s+()\-]/g, "").replace(/[^0-9]/g, "");
 }
 
 export function waLink(number: string, message: string): string {
