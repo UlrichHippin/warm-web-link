@@ -126,7 +126,7 @@ function ThankYou() {
           </Card>
         )}
 
-        <a href={wa} target="_blank" rel="noreferrer" className="mt-6 block">
+        <a href={wa} target="_blank" rel="noopener noreferrer" className="mt-6 block">
           <Button size="lg" className="w-full bg-[#25D366] hover:bg-[#25D366]/90">
             <MessageCircle className="mr-2 h-5 w-5" />
             Send Request ID on WhatsApp
