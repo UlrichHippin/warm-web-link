@@ -299,17 +299,17 @@ function Dashboard() {
                       {fmtKES(b.estimated_total)}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="text-[10px]">
+                      <Badge variant="outline" className={`text-[10px] ${statusBadgeClass(b.status)}`}>
                         {b.status}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-[10px]">
+                      <Badge variant="outline" className={`text-[10px] ${paymentBadgeClass(b.payment_status)}`}>
                         {b.payment_status}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-[10px]">
+                      <Badge variant="outline" className={`text-[10px] ${appointmentBadgeClass(b.appointment_status)}`}>
                         {b.appointment_status}
                       </Badge>
                     </TableCell>
