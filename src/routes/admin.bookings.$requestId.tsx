@@ -300,36 +300,67 @@ Thank you for choosing FreshDream Mattress Care. We would appreciate your feedba
           <Card className="sticky top-4">
             <CardHeader>
               <CardTitle>Update status</CardTitle>
+              <p className="text-xs text-muted-foreground">
+                Changes save to Supabase automatically.
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <FieldSel label="Status" value={status} onChange={setStatus} options={STATUS_OPTIONS} />
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className={statusBadgeClass(status)}>
+                  {status}
+                </Badge>
+                <Badge variant="outline" className={paymentBadgeClass(paymentStatus)}>
+                  {paymentStatus}
+                </Badge>
+                <Badge variant="outline" className={appointmentBadgeClass(appointmentStatus)}>
+                  {appointmentStatus}
+                </Badge>
+              </div>
+              <FieldSel
+                label="Status"
+                value={status}
+                saving={savingField === "status"}
+                onChange={(v) => {
+                  setStatus(v);
+                  void persist({ status: v }, "status");
+                }}
+                options={STATUS_OPTIONS}
+              />
               <FieldSel
                 label="Payment status"
                 value={paymentStatus}
-                onChange={setPaymentStatus}
+                saving={savingField === "payment_status"}
+                onChange={(v) => {
+                  setPaymentStatus(v);
+                  void persist({ payment_status: v }, "payment_status");
+                }}
                 options={PAYMENT_STATUS_OPTIONS}
               />
               <FieldSel
                 label="Appointment status"
                 value={appointmentStatus}
-                onChange={setAppointmentStatus}
+                saving={savingField === "appointment_status"}
+                onChange={(v) => {
+                  setAppointmentStatus(v);
+                  void persist({ appointment_status: v }, "appointment_status");
+                }}
                 options={APPOINTMENT_STATUS_OPTIONS}
               />
               <div className="space-y-1.5">
-                <Label className="text-xs">Internal notes</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs">Internal notes</Label>
+                  {savingField === "notes" && (
+                    <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                  )}
+                </div>
                 <Textarea rows={4} value={notes} onChange={(e) => setNotes(e.target.value)} />
-              </div>
-              <Button className="w-full" onClick={save} disabled={saving}>
-                {saving ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="mr-2 h-4 w-4" />
-                )}
-                Save changes
-              </Button>
-              {booking.admin_last_updated_at && (
                 <p className="text-[10px] text-muted-foreground">
-                  Last updated {new Date(booking.admin_last_updated_at).toLocaleString("en-KE")}
+                  Saved automatically while you type.
+                </p>
+              </div>
+              {lastUpdated && (
+                <p className="text-[10px] text-muted-foreground">
+                  Last updated {new Date(lastUpdated).toLocaleString("en-KE")}
                 </p>
               )}
             </CardContent>
