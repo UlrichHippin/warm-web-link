@@ -40,6 +40,7 @@ import {
   estimate,
   fmtKES,
   generateRequestId,
+  createWhatsAppUrl,
   type BookingFormValues,
 } from "@/lib/booking";
 
@@ -66,7 +67,7 @@ function PublicBookingPage() {
             </div>
           </div>
           <a
-            href={`https://wa.me/254708835235`}
+            href={createWhatsAppUrl("Hello FreshDream, I would like to ask about a mattress refresh.")}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs font-medium text-primary hover:underline"
