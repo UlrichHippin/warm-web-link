@@ -33,7 +33,10 @@ import {
   APPOINTMENT_STATUS_OPTIONS,
   PAYMENT_STATUS_OPTIONS,
   STATUS_OPTIONS,
+  appointmentBadgeClass,
   fmtKES,
+  paymentBadgeClass,
+  statusBadgeClass,
 } from "@/lib/booking";
 import { RequireAdmin } from "./admin";
 
