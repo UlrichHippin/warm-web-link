@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ExternalLink, Loader2, MessageCircle, Save } from "lucide-react";
+import { ArrowLeft, ExternalLink, Loader2, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,10 @@ import {
   APPOINTMENT_STATUS_OPTIONS,
   PAYMENT_STATUS_OPTIONS,
   STATUS_OPTIONS,
+  appointmentBadgeClass,
   fmtKES,
+  paymentBadgeClass,
+  statusBadgeClass,
   waLink,
 } from "@/lib/booking";
 import { RequireAdmin } from "./admin";
@@ -114,28 +118,44 @@ function DetailView({ booking, onSaved }: { booking: FullBooking; onSaved: () =>
   const [finalPrice, setFinalPrice] = useState<string>(
     booking.estimated_total ? String(booking.estimated_total) : "",
   );
-  const [saving, setSaving] = useState(false);
+  const [savingField, setSavingField] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(booking.admin_last_updated_at);
 
-  const save = async () => {
-    setSaving(true);
+  const persist = async (
+    patch: Partial<Pick<FullBooking, "status" | "payment_status" | "appointment_status" | "internal_notes">>,
+    fieldKey: string,
+  ) => {
+    setSavingField(fieldKey);
+    const stamp = new Date().toISOString();
     const { error } = await supabase
       .from("booking_requests")
-      .update({
-        status,
-        payment_status: paymentStatus,
-        appointment_status: appointmentStatus,
-        internal_notes: notes || null,
-        admin_last_updated_at: new Date().toISOString(),
-      })
+      .update({ ...patch, admin_last_updated_at: stamp })
       .eq("id", booking.id);
-    setSaving(false);
+    setSavingField(null);
     if (error) {
       toast.error("Save failed", { description: error.message });
       return;
     }
+    setLastUpdated(stamp);
     toast.success("Saved");
     onSaved();
   };
+
+  // Debounced auto-save for the free-text notes field.
+  const notesTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const initialNotes = useRef(booking.internal_notes ?? "");
+  useEffect(() => {
+    if (notes === initialNotes.current) return;
+    if (notesTimer.current) clearTimeout(notesTimer.current);
+    notesTimer.current = setTimeout(() => {
+      void persist({ internal_notes: notes || null }, "notes");
+      initialNotes.current = notes;
+    }, 800);
+    return () => {
+      if (notesTimer.current) clearTimeout(notesTimer.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notes]);
 
   const msg = (text: string) => waLink(booking.whatsapp_number, text);
 
@@ -280,36 +300,67 @@ Thank you for choosing FreshDream Mattress Care. We would appreciate your feedba
           <Card className="sticky top-4">
             <CardHeader>
               <CardTitle>Update status</CardTitle>
+              <p className="text-xs text-muted-foreground">
+                Changes save to Supabase automatically.
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <FieldSel label="Status" value={status} onChange={setStatus} options={STATUS_OPTIONS} />
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className={statusBadgeClass(status)}>
+                  {status}
+                </Badge>
+                <Badge variant="outline" className={paymentBadgeClass(paymentStatus)}>
+                  {paymentStatus}
+                </Badge>
+                <Badge variant="outline" className={appointmentBadgeClass(appointmentStatus)}>
+                  {appointmentStatus}
+                </Badge>
+              </div>
+              <FieldSel
+                label="Status"
+                value={status}
+                saving={savingField === "status"}
+                onChange={(v) => {
+                  setStatus(v);
+                  void persist({ status: v }, "status");
+                }}
+                options={STATUS_OPTIONS}
+              />
               <FieldSel
                 label="Payment status"
                 value={paymentStatus}
-                onChange={setPaymentStatus}
+                saving={savingField === "payment_status"}
+                onChange={(v) => {
+                  setPaymentStatus(v);
+                  void persist({ payment_status: v }, "payment_status");
+                }}
                 options={PAYMENT_STATUS_OPTIONS}
               />
               <FieldSel
                 label="Appointment status"
                 value={appointmentStatus}
-                onChange={setAppointmentStatus}
+                saving={savingField === "appointment_status"}
+                onChange={(v) => {
+                  setAppointmentStatus(v);
+                  void persist({ appointment_status: v }, "appointment_status");
+                }}
                 options={APPOINTMENT_STATUS_OPTIONS}
               />
               <div className="space-y-1.5">
-                <Label className="text-xs">Internal notes</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs">Internal notes</Label>
+                  {savingField === "notes" && (
+                    <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                  )}
+                </div>
                 <Textarea rows={4} value={notes} onChange={(e) => setNotes(e.target.value)} />
-              </div>
-              <Button className="w-full" onClick={save} disabled={saving}>
-                {saving ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="mr-2 h-4 w-4" />
-                )}
-                Save changes
-              </Button>
-              {booking.admin_last_updated_at && (
                 <p className="text-[10px] text-muted-foreground">
-                  Last updated {new Date(booking.admin_last_updated_at).toLocaleString("en-KE")}
+                  Saved automatically while you type.
+                </p>
+              </div>
+              {lastUpdated && (
+                <p className="text-[10px] text-muted-foreground">
+                  Last updated {new Date(lastUpdated).toLocaleString("en-KE")}
                 </p>
               )}
             </CardContent>
@@ -325,15 +376,20 @@ function FieldSel({
   value,
   onChange,
   options,
+  saving,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   options: readonly string[];
+  saving?: boolean;
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">{label}</Label>
+      <div className="flex items-center justify-between">
+        <Label className="text-xs">{label}</Label>
+        {saving && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
+      </div>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger>
           <SelectValue />
