@@ -287,6 +287,29 @@ function BookingForm({ step, setStep }: { step: Step; setStep: (s: Step) => void
         estimated_total: finalEst.estimated_total,
       });
       if (error) throw error;
+      // Cache for the thank-you page (public RLS forbids reading bookings).
+      try {
+        sessionStorage.setItem(
+          `fd-booking-${requestId}`,
+          JSON.stringify({
+            request_id: requestId,
+            full_name: values.full_name,
+            whatsapp_number: values.whatsapp_number,
+            email: values.email,
+            cleaning_package: values.cleaning_package,
+            mattress_size: values.mattress_size,
+            number_of_mattresses: values.number_of_mattresses,
+            addons: values.addons,
+            area_zone: values.area_zone,
+            exact_address: values.exact_address,
+            preferred_date: values.preferred_date,
+            preferred_time_window: values.preferred_time_window,
+            estimated_total: finalEst.estimated_total,
+          }),
+        );
+      } catch {
+        // sessionStorage unavailable — message will use only the request_id.
+      }
       navigate({ to: "/thank-you/$requestId", params: { requestId } });
     } catch (e) {
       toast.error("Could not submit booking", {

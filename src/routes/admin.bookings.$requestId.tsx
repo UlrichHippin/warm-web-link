@@ -160,7 +160,7 @@ Service: ${booking.cleaning_package}
 Date: ${booking.preferred_date}
 Time: ${booking.preferred_time_window}
 
-Final price and official M-PESA payment instructions will be shared here.
+FreshDream will share final price and official M-PESA payment instructions here.
 
 Thank you for choosing FreshDream Mattress Care.`;
 
