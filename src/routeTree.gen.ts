@@ -11,8 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ThankYouRequestIdRouteImport } from './routes/thank-you.$requestId'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminBookingsRequestIdRouteImport } from './routes/admin.bookings.$requestId'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
@@ -24,14 +27,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ThankYouRequestIdRoute = ThankYouRequestIdRouteImport.update({
   id: '/thank-you/$requestId',
   path: '/thank-you/$requestId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBookingsRequestIdRoute = AdminBookingsRequestIdRouteImport.update({
+  id: '/bookings/$requestId',
+  path: '/bookings/$requestId',
   getParentRoute: () => AdminRoute,
 } as any)
 
@@ -39,27 +57,56 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/thank-you/$requestId': typeof ThankYouRequestIdRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/bookings/$requestId': typeof AdminBookingsRequestIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/thank-you/$requestId': typeof ThankYouRequestIdRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/bookings/$requestId': typeof AdminBookingsRequestIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/thank-you/$requestId': typeof ThankYouRequestIdRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/bookings/$requestId': typeof AdminBookingsRequestIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/admin/login' | '/thank-you/$requestId'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/admin/login'
+    | '/admin/settings'
+    | '/thank-you/$requestId'
+    | '/admin/'
+    | '/admin/bookings/$requestId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/admin/login' | '/thank-you/$requestId'
-  id: '__root__' | '/' | '/admin' | '/admin/login' | '/thank-you/$requestId'
+  to:
+    | '/'
+    | '/admin/login'
+    | '/admin/settings'
+    | '/thank-you/$requestId'
+    | '/admin'
+    | '/admin/bookings/$requestId'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/admin/login'
+    | '/admin/settings'
+    | '/thank-you/$requestId'
+    | '/admin/'
+    | '/admin/bookings/$requestId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -84,12 +131,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/thank-you/$requestId': {
       id: '/thank-you/$requestId'
       path: '/thank-you/$requestId'
       fullPath: '/thank-you/$requestId'
       preLoaderRoute: typeof ThankYouRequestIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/login': {
       id: '/admin/login'
@@ -98,15 +159,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/bookings/$requestId': {
+      id: '/admin/bookings/$requestId'
+      path: '/bookings/$requestId'
+      fullPath: '/admin/bookings/$requestId'
+      preLoaderRoute: typeof AdminBookingsRequestIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminBookingsRequestIdRoute: typeof AdminBookingsRequestIdRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminBookingsRequestIdRoute: AdminBookingsRequestIdRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
