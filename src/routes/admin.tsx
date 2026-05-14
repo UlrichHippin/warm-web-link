@@ -11,8 +11,17 @@ function AdminLayout() {
   return <Outlet />;
 }
 
-export function RequireAdmin({ children }: { children: React.ReactNode }) {
-  const { loading, session, isAdmin } = useAuth();
+function Gate({
+  children,
+  allow,
+  roleLabel,
+}: {
+  children: React.ReactNode;
+  allow: (a: ReturnType<typeof useAuth>) => boolean;
+  roleLabel: string;
+}) {
+  const auth = useAuth();
+  const { loading, session } = auth;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,13 +39,13 @@ export function RequireAdmin({ children }: { children: React.ReactNode }) {
     );
   }
   if (!session) return null;
-  if (!isAdmin) {
+  if (!allow(auth)) {
     return (
       <div className="grid min-h-screen place-items-center px-4">
         <div className="max-w-sm space-y-2 text-center">
           <h2 className="text-xl font-semibold">Not authorised</h2>
           <p className="text-sm text-muted-foreground">
-            Your account is signed in but does not have the <code>admin</code> role.
+            Your account is signed in but does not have the {roleLabel} role.
             Ask the project owner to add it in <code>user_roles</code>.
           </p>
         </div>
@@ -44,4 +53,20 @@ export function RequireAdmin({ children }: { children: React.ReactNode }) {
     );
   }
   return <>{children}</>;
+}
+
+export function RequireAdmin({ children }: { children: React.ReactNode }) {
+  return (
+    <Gate allow={(a) => a.isAdmin} roleLabel="admin">
+      {children}
+    </Gate>
+  );
+}
+
+export function RequireDashboardAccess({ children }: { children: React.ReactNode }) {
+  return (
+    <Gate allow={(a) => a.hasDashboardAccess} roleLabel="admin or operator">
+      {children}
+    </Gate>
+  );
 }
