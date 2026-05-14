@@ -6,12 +6,15 @@ export interface AuthState {
   session: Session | null;
   user: User | null;
   isAdmin: boolean;
+  isOperator: boolean;
+  hasDashboardAccess: boolean;
   loading: boolean;
 }
 
 export function useAuth(): AuthState {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isOperator, setIsOperator] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,16 +22,21 @@ export function useAuth(): AuthState {
 
     const refreshAdmin = async (uid: string | undefined) => {
       if (!uid) {
-        if (mounted) setIsAdmin(false);
+        if (mounted) {
+          setIsAdmin(false);
+          setIsOperator(false);
+        }
         return;
       }
       const { data } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", uid)
-        .eq("role", "admin")
-        .maybeSingle();
-      if (mounted) setIsAdmin(Boolean(data));
+        .eq("user_id", uid);
+      if (mounted) {
+        const roles = (data ?? []).map((r) => r.role as string);
+        setIsAdmin(roles.includes("admin"));
+        setIsOperator(roles.includes("operator"));
+      }
     };
 
     const { data: sub } = supabase.auth.onAuthStateChange((_evt, s) => {
@@ -50,5 +58,12 @@ export function useAuth(): AuthState {
     };
   }, []);
 
-  return { session, user: session?.user ?? null, isAdmin, loading };
+  return {
+    session,
+    user: session?.user ?? null,
+    isAdmin,
+    isOperator,
+    hasDashboardAccess: isAdmin || isOperator,
+    loading,
+  };
 }

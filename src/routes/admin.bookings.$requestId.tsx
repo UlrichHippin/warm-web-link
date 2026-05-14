@@ -28,13 +28,13 @@ import {
   statusBadgeClass,
   waLink,
 } from "@/lib/booking";
-import { RequireAdmin } from "./admin";
+import { RequireDashboardAccess } from "./admin";
 
 export const Route = createFileRoute("/admin/bookings/$requestId")({
   component: () => (
-    <RequireAdmin>
+    <RequireDashboardAccess>
       <BookingDetail />
-    </RequireAdmin>
+    </RequireDashboardAccess>
   ),
 });
 
