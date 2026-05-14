@@ -348,13 +348,13 @@ function BookingForm({ step, setStep }: { step: Step; setStep: (s: Step) => void
           </Field>
           <Field
             label="WhatsApp Number"
-            help="Please enter your WhatsApp number with country code."
+            help="Please enter your WhatsApp number in international format, including country code. Examples: +254708835235 or +4915756233913."
             error={form.formState.errors.whatsapp_number?.message}
           >
             <Input
               {...form.register("whatsapp_number")}
               type="tel"
-              placeholder="+254712345678"
+              placeholder="+254708835235 or +4915756233913"
               inputMode="tel"
             />
           </Field>
