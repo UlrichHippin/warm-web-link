@@ -65,20 +65,35 @@ function PublicBookingPage() {
   const [pendingPackage, setPendingPackage] = useState<string | null>(null);
   const [selectedServiceTitle, setSelectedServiceTitle] = useState<string | null>(null);
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const [hasStartedBooking, setHasStartedBooking] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
 
   const handleServiceSelect = (id: string, pkg: string, title: string) => {
     setSelectedServiceId(id);
     setPendingPackage(pkg);
     setSelectedServiceTitle(title);
+    setHasStartedBooking(true);
     setStep("form");
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 50);
   };
 
+  // C3: Hide the sticky WhatsApp CTA once the customer has engaged with the
+  // booking flow, so it never competes with the in-form Submit button.
+  const showStickyWhatsApp = !hasStartedBooking && step !== "review";
+
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div
+      className="min-h-screen bg-background"
+      style={{
+        // C1: Reserve space for the sticky bar (only when visible) plus the
+        // device safe-area inset so nothing overlaps the submit/consent UI.
+        paddingBottom: showStickyWhatsApp
+          ? "calc(env(safe-area-inset-bottom) + 8rem)"
+          : "calc(env(safe-area-inset-bottom) + 2rem)",
+      }}
+    >
       <SiteHeader />
 
       {/* Hero */}
@@ -152,6 +167,7 @@ function PublicBookingPage() {
           setStep={setStep}
           presetPackage={pendingPackage}
           onPresetApplied={() => setPendingPackage(null)}
+          onFormStart={() => setHasStartedBooking(true)}
         />
       </main>
 
@@ -159,7 +175,7 @@ function PublicBookingPage() {
         © {new Date().getFullYear()} FreshDream Mattress Care · Nairobi
       </footer>
 
-      <StickyWhatsAppBar selectedService={selectedServiceTitle} />
+      {showStickyWhatsApp && <StickyWhatsAppBar selectedService={selectedServiceTitle} />}
     </div>
   );
 }
@@ -169,11 +185,13 @@ function BookingForm({
   setStep,
   presetPackage,
   onPresetApplied,
+  onFormStart,
 }: {
   step: Step;
   setStep: (s: Step) => void;
   presetPackage?: string | null;
   onPresetApplied?: () => void;
+  onFormStart?: () => void;
 }) {
   const navigate = useNavigate();
   const [photoUploading, setPhotoUploading] = useState(false);
@@ -242,8 +260,10 @@ function BookingForm({
       return;
     }
     if (!supabaseConfigured) {
-      toast.error("Photo upload disabled", {
-        description: "Supabase is not configured yet.",
+      // C2: customer-friendly message — no internal config / env var names.
+      toast.error("Photo upload temporarily unavailable", {
+        description:
+          "You can still submit your booking request and send photos later via WhatsApp.",
       });
       return;
     }
@@ -290,9 +310,10 @@ function BookingForm({
 
   const onSubmit = async (values: BookingFormValues) => {
     if (!supabaseConfigured) {
-      toast.error("Booking disabled", {
+      // C2: customer-friendly message — no internal config / env var names.
+      toast.error("Booking is temporarily unavailable", {
         description:
-          "Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env, then redeploy.",
+          "Please send your request directly via WhatsApp and our team will assist you.",
       });
       return;
     }
@@ -377,7 +398,11 @@ function BookingForm({
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+    <form
+      className="space-y-6"
+      onSubmit={(e) => e.preventDefault()}
+      onFocusCapture={() => onFormStart?.()}
+    >
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">1 · Customer Details</CardTitle>
