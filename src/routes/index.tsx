@@ -812,17 +812,37 @@ function ReviewSummary({
 
       <Card>
         <CardContent className="space-y-4 pt-6">
-          <label className="flex cursor-pointer items-start gap-3">
-            <Checkbox
-              checked={consent}
-              onCheckedChange={(v) => setConsent(!!v)}
-              className="mt-0.5"
-            />
-            <span className="text-sm leading-snug">
-              I understand that FreshDream will confirm my booking on WhatsApp
-              before the appointment is final.
-            </span>
-          </label>
+          <div
+            ref={(el) => {
+              consentBoxRef.current = el;
+            }}
+            className={cn(
+              "rounded-md border border-transparent p-2 -m-2 transition-colors",
+              consentNudge && "border-destructive/60 bg-destructive/5",
+            )}
+          >
+            <label className="flex cursor-pointer items-start gap-3">
+              <Checkbox
+                checked={consent}
+                onCheckedChange={(v) => setConsent(!!v)}
+                className="mt-0.5"
+              />
+              <span
+                className={cn(
+                  "text-sm leading-snug",
+                  consentNudge && "text-destructive font-medium",
+                )}
+              >
+                I understand that FreshDream will confirm my booking on WhatsApp
+                before the appointment is final.
+              </span>
+            </label>
+            {consentNudge && (
+              <p className="mt-2 pl-7 text-xs text-destructive" role="alert">
+                Please tick the box above to submit your booking request.
+              </p>
+            )}
+          </div>
           <div className="flex flex-col gap-2 sm:flex-row">
             <Button variant="outline" type="button" onClick={onBack} disabled={submitting}>
               Back to edit
@@ -830,9 +850,13 @@ function ReviewSummary({
             <Button
               type="button"
               size="lg"
-              className="flex-1"
-              onClick={onSubmit}
-              disabled={!consent || submitting}
+              aria-disabled={!consent || submitting}
+              className={cn(
+                "flex-1",
+                !consent &&
+                  "bg-gray-200 text-gray-500 hover:bg-gray-200 shadow-none",
+              )}
+              onClick={handleSubmitClick}
             >
               {submitting ? (
                 <>
