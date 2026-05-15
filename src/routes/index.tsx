@@ -625,10 +625,7 @@ function BookingForm({
         <CardContent className="space-y-3">
           <div className="flex items-end justify-between">
             <span className="text-sm text-muted-foreground">Estimated Price</span>
-            <span className={cn(
-              "text-3xl font-bold",
-              est.needsConfirmation ? "text-[#1E4B35]" : "text-primary",
-            )}>
+            <span className={`text-3xl font-bold ${est.needsConfirmation ? "text-[#1E4B35]" : "text-primary"}`}>
               {est.needsConfirmation ? "To be confirmed" : fmtKES(est.estimated_total)}
             </span>
           </div>
