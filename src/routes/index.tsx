@@ -745,6 +745,43 @@ function ReviewSummary({
   setConsent: (v: boolean) => void;
   submitting: boolean;
 }) {
+  const consentBoxRef = useRef<HTMLDivElement | null>(null);
+  const [consentNudge, setConsentNudge] = useState(false);
+  const nudgeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (nudgeTimerRef.current) clearTimeout(nudgeTimerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (consent && consentNudge) setConsentNudge(false);
+  }, [consent, consentNudge]);
+
+  const handleSubmitClick = () => {
+    if (submitting) return;
+    if (!consent) {
+      setConsentNudge(true);
+      const el = consentBoxRef.current;
+      if (el) {
+        el.classList.remove("shake-attention");
+        // force reflow so the animation can replay
+        void el.offsetWidth;
+        el.classList.add("shake-attention");
+        const onEnd = () => {
+          el.classList.remove("shake-attention");
+          el.removeEventListener("animationend", onEnd);
+        };
+        el.addEventListener("animationend", onEnd);
+      }
+      if (nudgeTimerRef.current) clearTimeout(nudgeTimerRef.current);
+      nudgeTimerRef.current = setTimeout(() => setConsentNudge(false), 4000);
+      return;
+    }
+    onSubmit();
+  };
+
   const rows: Array<[string, string | number | undefined]> = [
     ["Customer name", values.full_name],
     ["WhatsApp number", values.whatsapp_number],
