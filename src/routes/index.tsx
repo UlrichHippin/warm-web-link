@@ -310,9 +310,10 @@ function BookingForm({
 
   const onSubmit = async (values: BookingFormValues) => {
     if (!supabaseConfigured) {
-      toast.error("Booking disabled", {
+      // C2: customer-friendly message — no internal config / env var names.
+      toast.error("Booking is temporarily unavailable", {
         description:
-          "Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env, then redeploy.",
+          "Please send your request directly via WhatsApp and our team will assist you.",
       });
       return;
     }
