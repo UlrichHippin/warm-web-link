@@ -97,6 +97,12 @@ function ThankYou() {
               will confirm final availability, final price and official M-PESA
               payment instructions via WhatsApp.
             </div>
+            {/* I6: make it explicit that WhatsApp is the main channel and
+                email is only a backup. */}
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              FreshDream contacts customers on WhatsApp only. Your email is kept
+              as a backup in case we cannot reach you on WhatsApp.
+            </p>
           </CardContent>
         </Card>
 
