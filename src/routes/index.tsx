@@ -279,8 +279,10 @@ function BookingForm({
       form.setValue("upload_photo_url", data.publicUrl, { shouldValidate: true });
       toast.success("Photo uploaded");
     } catch (e) {
-      toast.error("Upload failed", {
-        description: e instanceof Error ? e.message : "Try again",
+      console.error("[FreshDream] Photo upload failed:", e);
+      toast.error("Photo upload failed", {
+        description:
+          "We could not upload the photo right now. You can still submit your booking request and send photos later via WhatsApp.",
       });
     } finally {
       setPhotoUploading(false);
@@ -373,8 +375,10 @@ function BookingForm({
       }
       navigate({ to: "/thank-you/$requestId", params: { requestId } });
     } catch (e) {
+      console.error("[FreshDream] Booking submit failed:", e);
       toast.error("Could not submit booking", {
-        description: e instanceof Error ? e.message : "Try again",
+        description:
+          "Please try again. If the issue continues, send your booking request directly via WhatsApp and our team will assist you.",
       });
     } finally {
       setSubmitting(false);
