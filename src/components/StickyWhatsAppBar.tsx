@@ -4,12 +4,19 @@ import { createWhatsAppUrl } from "@/lib/booking";
 interface Props {
   message?: string;
   label?: string;
+  selectedService?: string | null;
 }
 
 export function StickyWhatsAppBar({
-  message = "Hello FreshDream, I would like to book a mattress refresh in Nairobi.",
+  message,
   label = "Book via WhatsApp",
+  selectedService,
 }: Props) {
+  const finalMessage =
+    message ??
+    (selectedService
+      ? `Hello FreshDream, I would like to book the "${selectedService}" service in Nairobi.`
+      : "Hello FreshDream, I would like to book a mattress refresh in Nairobi.");
   return (
     <div
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
