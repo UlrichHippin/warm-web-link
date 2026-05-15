@@ -647,13 +647,21 @@ function BookingForm({
                   const trigger = e.currentTarget;
                   const el = document.getElementById("service-details");
                   if (!el) return;
-                  el.scrollIntoView({ behavior: "smooth", block: "start" });
-                  el.classList.remove("flash-highlight");
-                  void el.offsetWidth;
-                  el.classList.add("flash-highlight");
+                  const reduceMotion = window.matchMedia(
+                    "(prefers-reduced-motion: reduce)",
+                  ).matches;
+                  el.scrollIntoView({
+                    behavior: reduceMotion ? "auto" : "smooth",
+                    block: "start",
+                  });
+                  if (!reduceMotion) {
+                    el.classList.remove("flash-highlight");
+                    void el.offsetWidth;
+                    el.classList.add("flash-highlight");
+                    window.setTimeout(() => el.classList.remove("flash-highlight"), 1400);
+                  }
                   if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
                   el.focus({ preventScroll: true });
-                  window.setTimeout(() => el.classList.remove("flash-highlight"), 1400);
 
                   // Return focus to the Edit details trigger when focus leaves the section
                   const onFocusOut = (ev: FocusEvent) => {
