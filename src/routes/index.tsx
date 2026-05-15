@@ -641,6 +641,8 @@ function BookingForm({
               Final price depends on your service, mattress size, area in Nairobi, and urgency.{" "}
               <button
                 type="button"
+                aria-label="Edit service details: service, mattress size, area and urgency"
+                aria-controls="service-details"
                 onClick={() => {
                   const el = document.getElementById("service-details");
                   if (!el) return;
@@ -648,12 +650,11 @@ function BookingForm({
                   el.classList.remove("flash-highlight");
                   void el.offsetWidth;
                   el.classList.add("flash-highlight");
-                  // make the card focusable and move keyboard focus to it
                   if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
                   el.focus({ preventScroll: true });
                   window.setTimeout(() => el.classList.remove("flash-highlight"), 1400);
                 }}
-                className="font-semibold text-[#1E4B35] underline underline-offset-2 hover:text-[#65A745]"
+                className="font-semibold text-[#1E4B35] underline underline-offset-2 hover:text-[#65A745] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E4B35] focus-visible:ring-offset-2 rounded-sm"
               >
                 Edit details
               </button>
