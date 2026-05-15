@@ -93,9 +93,8 @@ export function StickyWhatsAppBar({
             target="_blank"
             rel="noopener noreferrer"
             aria-label={label}
-            aria-haspopup="dialog"
             aria-expanded={open}
-            aria-controls={tooltipId}
+            aria-controls={open ? tooltipId : undefined}
             aria-describedby={open ? tooltipId : undefined}
             onPointerDown={handlePointerDown}
             onClick={handleClick}
