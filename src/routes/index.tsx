@@ -483,11 +483,14 @@ function BookingForm({
 
       <Card
         id="service-details"
+        role="region"
+        aria-labelledby="service-details-title"
         className="scroll-mt-4 outline-none focus-visible:ring-2 focus-visible:ring-[#1E4B35] focus-visible:ring-offset-2"
       >
-
         <CardHeader>
-          <CardTitle className="text-lg">3 · Service Details</CardTitle>
+          <CardTitle id="service-details-title" className="text-lg">
+            3 · Service Details
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <Field label="Cleaning Package" error={form.formState.errors.cleaning_package?.message}>
