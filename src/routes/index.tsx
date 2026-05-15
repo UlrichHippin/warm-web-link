@@ -643,7 +643,8 @@ function BookingForm({
                 type="button"
                 aria-label="Edit service details: service, mattress size, area and urgency"
                 aria-controls="service-details"
-                onClick={() => {
+                onClick={(e) => {
+                  const trigger = e.currentTarget;
                   const el = document.getElementById("service-details");
                   if (!el) return;
                   el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -653,6 +654,18 @@ function BookingForm({
                   if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
                   el.focus({ preventScroll: true });
                   window.setTimeout(() => el.classList.remove("flash-highlight"), 1400);
+
+                  // Return focus to the Edit details trigger when focus leaves the section
+                  const onFocusOut = (ev: FocusEvent) => {
+                    const next = ev.relatedTarget as Node | null;
+                    if (next && el.contains(next)) return; // still inside
+                    el.removeEventListener("focusout", onFocusOut);
+                    // Only return focus if user tabbed out (not clicked elsewhere far away)
+                    window.setTimeout(() => {
+                      if (document.body.contains(trigger)) trigger.focus({ preventScroll: false });
+                    }, 0);
+                  };
+                  el.addEventListener("focusout", onFocusOut);
                 }}
                 className="font-semibold text-[#1E4B35] underline underline-offset-2 hover:text-[#65A745] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E4B35] focus-visible:ring-offset-2 rounded-sm"
               >
