@@ -632,7 +632,18 @@ function BookingForm({
           </div>
           {est.needsConfirmation && (
             <p className="text-xs leading-relaxed text-[#1E4B35]/80">
-              Final price depends on your service, mattress size, area in Nairobi, and urgency.
+              Final price depends on your service, mattress size, area in Nairobi, and urgency.{" "}
+              <button
+                type="button"
+                onClick={() =>
+                  document
+                    .getElementById("service-details")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }
+                className="font-semibold text-[#1E4B35] underline underline-offset-2 hover:text-[#65A745]"
+              >
+                Edit details
+              </button>
             </p>
           )}
           <p className="text-xs leading-relaxed text-muted-foreground">
