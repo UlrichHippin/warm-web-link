@@ -660,9 +660,19 @@ function BookingForm({
                     const next = ev.relatedTarget as Node | null;
                     if (next && el.contains(next)) return; // still inside
                     el.removeEventListener("focusout", onFocusOut);
-                    // Only return focus if user tabbed out (not clicked elsewhere far away)
                     window.setTimeout(() => {
-                      if (document.body.contains(trigger)) trigger.focus({ preventScroll: false });
+                      if (document.body.contains(trigger)) {
+                        trigger.focus({ preventScroll: false });
+                        const live = document.getElementById("edit-details-live");
+                        if (live) {
+                          // Toggle text so identical re-announcements are still spoken
+                          live.textContent = "";
+                          window.setTimeout(() => {
+                            live.textContent =
+                              "Returned to Edit details. Press Enter to edit service details again.";
+                          }, 50);
+                        }
+                      }
                     }, 0);
                   };
                   el.addEventListener("focusout", onFocusOut);
@@ -671,6 +681,12 @@ function BookingForm({
               >
                 Edit details
               </button>
+              <span
+                id="edit-details-live"
+                aria-live="polite"
+                aria-atomic="true"
+                className="sr-only"
+              />
             </p>
           )}
           <p className="text-xs leading-relaxed text-muted-foreground">
