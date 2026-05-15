@@ -63,10 +63,12 @@ const SERVICE_ICONS = [Sparkles, Droplets, Home, Building2];
 function PublicBookingPage() {
   const [step, setStep] = useState<Step>("form");
   const [pendingPackage, setPendingPackage] = useState<string | null>(null);
+  const [selectedServiceTitle, setSelectedServiceTitle] = useState<string | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
-  const handleServiceSelect = (pkg: string) => {
+  const handleServiceSelect = (pkg: string, title: string) => {
     setPendingPackage(pkg);
+    setSelectedServiceTitle(title);
     setStep("form");
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -118,7 +120,7 @@ function PublicBookingPage() {
               title={s.title}
               description={s.description}
               priceHint={s.priceHint}
-              onSelect={() => handleServiceSelect(s.package)}
+              onSelect={() => handleServiceSelect(s.package, s.title)}
             />
           ))}
         </div>
@@ -141,7 +143,7 @@ function PublicBookingPage() {
         © {new Date().getFullYear()} FreshDream Mattress Care · Nairobi
       </footer>
 
-      <StickyWhatsAppBar />
+      <StickyWhatsAppBar selectedService={selectedServiceTitle} />
     </div>
   );
 }
