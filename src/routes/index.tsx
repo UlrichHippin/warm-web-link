@@ -481,7 +481,8 @@ function BookingForm({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card id="service-details">
+
         <CardHeader>
           <CardTitle className="text-lg">3 · Service Details</CardTitle>
         </CardHeader>
