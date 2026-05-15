@@ -65,20 +65,35 @@ function PublicBookingPage() {
   const [pendingPackage, setPendingPackage] = useState<string | null>(null);
   const [selectedServiceTitle, setSelectedServiceTitle] = useState<string | null>(null);
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const [hasStartedBooking, setHasStartedBooking] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
 
   const handleServiceSelect = (id: string, pkg: string, title: string) => {
     setSelectedServiceId(id);
     setPendingPackage(pkg);
     setSelectedServiceTitle(title);
+    setHasStartedBooking(true);
     setStep("form");
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 50);
   };
 
+  // C3: Hide the sticky WhatsApp CTA once the customer has engaged with the
+  // booking flow, so it never competes with the in-form Submit button.
+  const showStickyWhatsApp = !hasStartedBooking && step !== "review";
+
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div
+      className="min-h-screen bg-background"
+      style={{
+        // C1: Reserve space for the sticky bar (only when visible) plus the
+        // device safe-area inset so nothing overlaps the submit/consent UI.
+        paddingBottom: showStickyWhatsApp
+          ? "calc(env(safe-area-inset-bottom) + 8rem)"
+          : "calc(env(safe-area-inset-bottom) + 2rem)",
+      }}
+    >
       <SiteHeader />
 
       {/* Hero */}
