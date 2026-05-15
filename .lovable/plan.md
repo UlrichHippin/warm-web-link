@@ -1,26 +1,32 @@
-## Hero refinement plan
+## Goal
+Honor `prefers-reduced-motion` for the "Edit details" interaction: skip the smooth scroll and the lime flash highlight, while preserving keyboard focus movement, focus-return on focusout, and the polite ARIA live announcement.
 
-### 1. New hero image (`src/assets/hero-mattress.jpg`)
-Regenerate via imagegen (overwriting the existing asset, same import path — no code import changes needed):
-- Bright, pristine all-white tufted mattress as the focal subject
-- Subtle textured sage/forest-green knit pillow resting on the corner
-- Small potted plant (monstera or eucalyptus sprig) softly out of focus in the background
-- Airy bedroom with soft natural daylight; warm but clean palette
-- 16:10, photographic, shallow depth of field
+## Scope
+Single file: `src/routes/index.tsx` (the "Edit details" button onClick in the Estimate card).
 
-### 2. Lime swoosh divider
-Add an SVG curved wave at the bottom of the `<section>` hero in `src/routes/index.tsx`, positioned absolutely, full width, ~40px tall, very low opacity (~25%), filled with `var(--brand-lime)`. Sits just above `<TrustBanner />` as a soft visual handoff. Pointer-events disabled.
+No changes to:
+- `src/styles.css` flash keyframes (kept; just not applied when reduced motion is preferred)
+- ARIA attributes, live region, or focus return logic
+- Tab order or focusable elements
 
-### 3. Headline emphasis
-In `src/routes/index.tsx` line 88, change the `h1` classes:
-- `font-extrabold` → `font-black`
-- `text-foreground` → explicit dark forest green (already `--foreground = --brand-green`, but tighten via `text-[color:var(--brand-green)]` to make intent explicit and add slightly tighter tracking)
-- Optional: bump to `text-5xl sm:text-6xl` for more presence
+## Behavior matrix
 
-### 4. No other changes
-TrustBanner, services, form, FAB stay untouched.
+| Capability | Normal motion | Reduced motion |
+|---|---|---|
+| Smooth scroll to section | yes (`behavior: "smooth"`) | instant (`behavior: "auto"`) |
+| Lime flash highlight on card | yes | skipped |
+| Move focus to Service Details card | yes | yes |
+| Return focus to Edit details on focusout | yes | yes |
+| Polite live-region announcement | yes | yes |
 
-### Technical notes
-- Image regeneration uses `imagegen--generate_image` with `standard` quality, `target_path: src/assets/hero-mattress.jpg`, `transparent_background: false`.
-- Update the `alt` text to mention the green pillow + plant for accessibility.
-- Swoosh is inline SVG (no new asset), uses semantic token `var(--brand-lime)`.
+## Implementation sketch
+
+In the button's `onClick`:
+1. Read `const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;`
+2. Use `el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" })`.
+3. Wrap the three flash-related lines (`classList.remove`, reflow, `classList.add`, and the cleanup `setTimeout`) in `if (!reduceMotion) { … }`.
+4. Leave focus management, focusout listener, and live-region update untouched.
+
+## Verification
+- Toggle OS "Reduce motion" on, click Edit details: page jumps (no smooth scroll), no lime flash, focus still lands on the card, tabbing out still returns focus to the button, screen reader still hears the announcement.
+- With reduce-motion off: behavior unchanged from current.
