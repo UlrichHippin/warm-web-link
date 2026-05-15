@@ -396,6 +396,11 @@ function BookingForm({
   }
 
   const today = new Date().toISOString().slice(0, 10);
+  // I10: cap the preferred date to ~60 days out so customers don't pick
+  // a date too far ahead for ops to confirm.
+  const maxDate = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
 
   return (
     <form
@@ -503,11 +508,13 @@ function BookingForm({
           </Field>
           <Field
             label="Number of Mattresses"
+            help="Up to 20 mattresses. For larger batches choose Multi-Mattress / Host above."
             error={form.formState.errors.number_of_mattresses?.message}
           >
             <Input
               type="number"
               min={1}
+              max={20}
               {...form.register("number_of_mattresses", { valueAsNumber: true })}
             />
           </Field>
@@ -580,8 +587,12 @@ function BookingForm({
           <CardTitle className="text-lg">4 · Preferred Schedule</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Field label="Preferred Date" error={form.formState.errors.preferred_date?.message}>
-            <Input type="date" min={today} {...form.register("preferred_date")} />
+          <Field
+            label="Preferred Date"
+            help="Pick a date within the next 60 days. Final availability is confirmed via WhatsApp."
+            error={form.formState.errors.preferred_date?.message}
+          >
+            <Input type="date" min={today} max={maxDate} {...form.register("preferred_date")} />
           </Field>
           <Field
             label="Preferred Time Window"
@@ -611,7 +622,10 @@ function BookingForm({
           <div className="flex items-end justify-between">
             <span className="text-sm text-muted-foreground">Estimated Price</span>
             <span className="text-3xl font-bold text-primary">
-              {fmtKES(est.estimated_total)}
+              {/* I4: hide the numeric estimate when key inputs are unknown
+                  (Not sure / Multiple / Other Area / Urgent) so customers
+                  don't see a misleading low total. */}
+              {est.needsConfirmation ? "To be confirmed" : fmtKES(est.estimated_total)}
             </span>
           </div>
           <p className="text-xs leading-relaxed text-muted-foreground">
@@ -683,6 +697,24 @@ function ReviewSummary({
             availability, final price and official M-PESA payment instructions via
             WhatsApp.
           </p>
+
+          {/* I11 + I6: confirm exactly which WhatsApp number and email
+              backup will be used. Make it explicit that WhatsApp is the
+              main channel and email is only a backup. */}
+          <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm">
+            <p className="font-semibold text-foreground">We'll contact you on WhatsApp</p>
+            <p className="mt-1 break-all text-muted-foreground">
+              WhatsApp: <span className="font-medium text-foreground">{values.whatsapp_number}</span>
+            </p>
+            <p className="break-all text-muted-foreground">
+              Email backup: <span className="font-medium text-foreground">{values.email}</span>
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              FreshDream contacts customers on WhatsApp only. Your email is kept
+              as a backup in case we cannot reach you on WhatsApp.
+            </p>
+          </div>
+
           <Separator />
           <dl className="space-y-2 text-sm">
             {rows.map(([k, v]) => (
@@ -694,7 +726,8 @@ function ReviewSummary({
             <div className="grid grid-cols-3 gap-3 border-t pt-3">
               <dt className="col-span-1 text-muted-foreground">Estimated total</dt>
               <dd className="col-span-2 text-lg font-bold text-primary">
-                {fmtKES(est.estimated_total)}
+                {/* I4: keep "To be confirmed" consistent on the review screen. */}
+                {est.needsConfirmation ? "To be confirmed" : fmtKES(est.estimated_total)}
               </dd>
             </div>
           </dl>
