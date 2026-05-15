@@ -82,10 +82,10 @@ function PublicBookingPage() {
       <SiteHeader />
 
       {/* Hero */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden pb-10">
         <div className="mx-auto grid max-w-3xl gap-6 px-4 pt-2 pb-8 sm:pt-4">
           <div className="relative">
-            <h1 className="text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground sm:text-5xl">
+            <h1 className="text-5xl font-black leading-[1.02] tracking-[-0.03em] text-[color:var(--brand-green)] sm:text-6xl">
               FreshDream Booking
             </h1>
             <p className="mt-3 max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -95,7 +95,7 @@ function PublicBookingPage() {
           <div className="relative overflow-hidden rounded-2xl shadow-[var(--shadow-soft)]">
             <img
               src={heroMattress}
-              alt="Freshly cleaned white tufted mattress in a bright airy bedroom"
+              alt="Pristine white tufted mattress with a textured sage-green pillow and a small potted plant in a bright airy bedroom"
               width={1600}
               height={900}
               className="aspect-[16/10] w-full object-cover"
@@ -107,6 +107,19 @@ function PublicBookingPage() {
             />
           </div>
         </div>
+        {/* Soft lime swoosh divider */}
+        <svg
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-10 w-full"
+          viewBox="0 0 1440 80"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,40 C240,90 480,0 720,30 C960,60 1200,80 1440,40 L1440,80 L0,80 Z"
+            fill="var(--brand-lime)"
+            fillOpacity="0.22"
+          />
+        </svg>
       </section>
 
       <TrustBanner />
