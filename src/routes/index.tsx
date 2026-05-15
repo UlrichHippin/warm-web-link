@@ -1,15 +1,18 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
   CheckCircle2,
   Loader2,
-  ShieldCheck,
-  Sparkles,
   Upload,
   AlertCircle,
+  Sparkles,
+  Wind,
+  Droplets,
+  Home,
+  Building2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -35,115 +38,110 @@ import {
   CLEANING_PACKAGES,
   MATTRESS_SIZES,
   PROPERTY_TYPES,
+  SERVICES,
   TIME_WINDOWS,
   bookingFormSchema,
   estimate,
   fmtKES,
   generateRequestId,
-  createWhatsAppUrl,
   type BookingFormValues,
 } from "@/lib/booking";
+import { SiteHeader } from "@/components/SiteHeader";
+import { TrustBanner } from "@/components/TrustBanner";
+import { ServiceCard } from "@/components/ServiceCard";
+import { StickyWhatsAppBar } from "@/components/StickyWhatsAppBar";
+import heroMattress from "@/assets/hero-mattress.jpg";
 
 export const Route = createFileRoute("/")({
   component: PublicBookingPage,
 });
 
-type Step = "intro" | "form" | "review";
+type Step = "form" | "review";
+
+const SERVICE_ICONS = [Sparkles, Droplets, Home, Building2];
 
 function PublicBookingPage() {
-  const [step, setStep] = useState<Step>("intro");
+  const [step, setStep] = useState<Step>("form");
+  const [pendingPackage, setPendingPackage] = useState<string | null>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+
+  const handleServiceSelect = (pkg: string) => {
+    setPendingPackage(pkg);
+    setStep("form");
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
-          <div className="flex items-center gap-2">
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold">FreshDream</p>
-              <p className="text-xs text-muted-foreground">Mattress Care · Nairobi</p>
-            </div>
-          </div>
-          <a
-            href={createWhatsAppUrl("Hello FreshDream, I would like to ask about a mattress refresh.")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            WhatsApp us
-          </a>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background pb-32">
+      <SiteHeader />
 
-      <main className="mx-auto max-w-3xl px-4 py-8">
-        {step === "intro" && <Intro onStart={() => setStep("form")} />}
-        {step !== "intro" && (
-          <BookingForm step={step} setStep={setStep} />
-        )}
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <div className="mx-auto grid max-w-3xl gap-6 px-4 pt-2 pb-8 sm:pt-4">
+          <div className="relative">
+            <h1 className="text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground sm:text-5xl">
+              FreshDream Booking
+            </h1>
+            <p className="mt-3 max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Professional mattress cleaning in minutes.
+            </p>
+          </div>
+          <div className="relative overflow-hidden rounded-2xl shadow-[var(--shadow-soft)]">
+            <img
+              src={heroMattress}
+              alt="Freshly cleaned white tufted mattress in a bright airy bedroom"
+              width={1600}
+              height={900}
+              className="aspect-[16/10] w-full object-cover"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-background/40 via-transparent to-transparent" />
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{ background: "var(--gradient-leaf)" }}
+            />
+          </div>
+        </div>
+      </section>
+
+      <TrustBanner />
+
+      {/* Service selection */}
+      <section className="mx-auto max-w-3xl px-4 py-4">
+        <h2 className="mb-3 px-1 text-lg font-bold text-foreground">Choose a service</h2>
+        <div className="grid gap-3">
+          {SERVICES.map((s, i) => (
+            <ServiceCard
+              key={s.id}
+              Icon={SERVICE_ICONS[i % SERVICE_ICONS.length]}
+              title={s.title}
+              description={s.description}
+              priceHint={s.priceHint}
+              onSelect={() => handleServiceSelect(s.package)}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Booking form */}
+      <main ref={formRef} className="mx-auto max-w-3xl px-4 py-8">
+        <h2 className="mb-4 text-lg font-bold text-foreground">
+          {step === "review" ? "Review your request" : "Complete your booking"}
+        </h2>
+        <BookingForm
+          step={step}
+          setStep={setStep}
+          presetPackage={pendingPackage}
+          onPresetApplied={() => setPendingPackage(null)}
+        />
       </main>
 
-      <footer className="border-t py-8 text-center text-xs text-muted-foreground">
+      <footer className="pb-6 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} FreshDream Mattress Care · Nairobi
       </footer>
-    </div>
-  );
-}
 
-function Intro({ onStart }: { onStart: () => void }) {
-  return (
-    <div className="space-y-6">
-      <Card className="overflow-hidden border-0 bg-gradient-to-br from-primary/10 via-accent/20 to-background shadow-sm">
-        <CardContent className="space-y-4 p-6 sm:p-10">
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">
-            <ShieldCheck className="h-3.5 w-3.5" /> Trusted mattress refresh in Nairobi
-          </div>
-          <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
-            Official FreshDream Booking Request
-          </h1>
-          <p className="text-sm font-medium text-muted-foreground">
-            FreshDream Mattress Care – Nairobi
-          </p>
-          <p className="text-base leading-relaxed text-foreground/80">
-            Book a mattress refresh in Nairobi with no drying time.
-          </p>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            Complete this short form to submit your booking request. FreshDream
-            will review your request and confirm availability, final price and
-            official M-PESA payment instructions via WhatsApp.
-          </p>
-          <Button size="lg" className="w-full sm:w-auto" onClick={onStart}>
-            Start Booking Request
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Alert className="border-accent/40 bg-accent/15">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription className="text-sm leading-relaxed">
-          This is a booking request, not a confirmed appointment yet. No payment
-          is required now. FreshDream will confirm availability, final price and
-          payment instructions via WhatsApp.
-        </AlertDescription>
-      </Alert>
-
-      <div className="grid gap-3 sm:grid-cols-3">
-        {[
-          { t: "No drying time", d: "Sleep on it the same night" },
-          { t: "Trained crew", d: "Professional, polite and on time" },
-          { t: "Pay after confirmation", d: "Official M-PESA via WhatsApp" },
-        ].map((f) => (
-          <Card key={f.t}>
-            <CardContent className="space-y-1 p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold">
-                <CheckCircle2 className="h-4 w-4 text-primary" /> {f.t}
-              </div>
-              <p className="text-xs text-muted-foreground">{f.d}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <StickyWhatsAppBar />
     </div>
   );
 }
