@@ -64,9 +64,11 @@ function PublicBookingPage() {
   const [step, setStep] = useState<Step>("form");
   const [pendingPackage, setPendingPackage] = useState<string | null>(null);
   const [selectedServiceTitle, setSelectedServiceTitle] = useState<string | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
-  const handleServiceSelect = (pkg: string, title: string) => {
+  const handleServiceSelect = (id: string, pkg: string, title: string) => {
+    setSelectedServiceId(id);
     setPendingPackage(pkg);
     setSelectedServiceTitle(title);
     setStep("form");
