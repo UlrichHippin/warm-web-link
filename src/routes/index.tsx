@@ -629,6 +629,11 @@ function BookingForm({
               {est.needsConfirmation ? "To be confirmed" : fmtKES(est.estimated_total)}
             </span>
           </div>
+          {est.needsConfirmation && (
+            <p className="text-xs leading-relaxed text-[#1E4B35]/80">
+              Final price depends on your service, mattress size, area in Nairobi, and urgency.
+            </p>
+          )}
           <p className="text-xs leading-relaxed text-muted-foreground">
             This is an estimate only. Final price will be confirmed after FreshDream
             reviews your location, mattress size, photos and requested service. No
