@@ -260,8 +260,10 @@ function BookingForm({
       return;
     }
     if (!supabaseConfigured) {
-      toast.error("Photo upload disabled", {
-        description: "Supabase is not configured yet.",
+      // C2: customer-friendly message — no internal config / env var names.
+      toast.error("Photo upload temporarily unavailable", {
+        description:
+          "You can still submit your booking request and send photos later via WhatsApp.",
       });
       return;
     }
