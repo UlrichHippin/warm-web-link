@@ -635,11 +635,16 @@ function BookingForm({
               Final price depends on your service, mattress size, area in Nairobi, and urgency.{" "}
               <button
                 type="button"
-                onClick={() =>
-                  document
-                    .getElementById("service-details")
-                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
-                }
+                onClick={() => {
+                  const el = document.getElementById("service-details");
+                  if (!el) return;
+                  el.scrollIntoView({ behavior: "smooth", block: "start" });
+                  el.classList.remove("flash-highlight");
+                  // restart animation
+                  void el.offsetWidth;
+                  el.classList.add("flash-highlight");
+                  window.setTimeout(() => el.classList.remove("flash-highlight"), 1400);
+                }}
                 className="font-semibold text-[#1E4B35] underline underline-offset-2 hover:text-[#65A745]"
               >
                 Edit details
