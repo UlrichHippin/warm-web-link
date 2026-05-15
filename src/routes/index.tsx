@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 
@@ -744,6 +745,43 @@ function ReviewSummary({
   setConsent: (v: boolean) => void;
   submitting: boolean;
 }) {
+  const consentBoxRef = useRef<HTMLDivElement | null>(null);
+  const [consentNudge, setConsentNudge] = useState(false);
+  const nudgeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (nudgeTimerRef.current) clearTimeout(nudgeTimerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (consent && consentNudge) setConsentNudge(false);
+  }, [consent, consentNudge]);
+
+  const handleSubmitClick = () => {
+    if (submitting) return;
+    if (!consent) {
+      setConsentNudge(true);
+      const el = consentBoxRef.current;
+      if (el) {
+        el.classList.remove("shake-attention");
+        // force reflow so the animation can replay
+        void el.offsetWidth;
+        el.classList.add("shake-attention");
+        const onEnd = () => {
+          el.classList.remove("shake-attention");
+          el.removeEventListener("animationend", onEnd);
+        };
+        el.addEventListener("animationend", onEnd);
+      }
+      if (nudgeTimerRef.current) clearTimeout(nudgeTimerRef.current);
+      nudgeTimerRef.current = setTimeout(() => setConsentNudge(false), 4000);
+      return;
+    }
+    onSubmit();
+  };
+
   const rows: Array<[string, string | number | undefined]> = [
     ["Customer name", values.full_name],
     ["WhatsApp number", values.whatsapp_number],
@@ -812,17 +850,37 @@ function ReviewSummary({
 
       <Card>
         <CardContent className="space-y-4 pt-6">
-          <label className="flex cursor-pointer items-start gap-3">
-            <Checkbox
-              checked={consent}
-              onCheckedChange={(v) => setConsent(!!v)}
-              className="mt-0.5"
-            />
-            <span className="text-sm leading-snug">
-              I understand that FreshDream will confirm my booking on WhatsApp
-              before the appointment is final.
-            </span>
-          </label>
+          <div
+            ref={(el) => {
+              consentBoxRef.current = el;
+            }}
+            className={cn(
+              "rounded-md border border-transparent p-2 -m-2 transition-colors",
+              consentNudge && "border-destructive/60 bg-destructive/5",
+            )}
+          >
+            <label className="flex cursor-pointer items-start gap-3">
+              <Checkbox
+                checked={consent}
+                onCheckedChange={(v) => setConsent(!!v)}
+                className="mt-0.5"
+              />
+              <span
+                className={cn(
+                  "text-sm leading-snug",
+                  consentNudge && "text-destructive font-medium",
+                )}
+              >
+                I understand that FreshDream will confirm my booking on WhatsApp
+                before the appointment is final.
+              </span>
+            </label>
+            {consentNudge && (
+              <p className="mt-2 pl-7 text-xs text-destructive" role="alert">
+                Please tick the box above to submit your booking request.
+              </p>
+            )}
+          </div>
           <div className="flex flex-col gap-2 sm:flex-row">
             <Button variant="outline" type="button" onClick={onBack} disabled={submitting}>
               Back to edit
@@ -830,9 +888,13 @@ function ReviewSummary({
             <Button
               type="button"
               size="lg"
-              className="flex-1"
-              onClick={onSubmit}
-              disabled={!consent || submitting}
+              aria-disabled={!consent || submitting}
+              className={cn(
+                "flex-1",
+                !consent &&
+                  "bg-gray-200 text-gray-500 hover:bg-gray-200 shadow-none",
+              )}
+              onClick={handleSubmitClick}
             >
               {submitting ? (
                 <>
