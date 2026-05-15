@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DevStatusRouteImport } from './routes/dev-status'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -19,6 +20,11 @@ import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDevStatusRouteImport } from './routes/admin.dev-status'
 import { Route as AdminBookingsRequestIdRouteImport } from './routes/admin.bookings.$requestId'
 
+const DevStatusRoute = DevStatusRouteImport.update({
+  id: '/dev-status',
+  path: '/dev-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -68,6 +74,7 @@ const AdminBookingsRequestIdRoute = AdminBookingsRequestIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/dev-status': typeof DevStatusRoute
   '/admin/dev-status': typeof AdminDevStatusRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dev-status': typeof DevStatusRoute
   '/admin/dev-status': typeof AdminDevStatusRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -90,6 +98,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/dev-status': typeof DevStatusRoute
   '/admin/dev-status': typeof AdminDevStatusRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/dev-status'
     | '/admin/dev-status'
     | '/admin/login'
     | '/admin/settings'
@@ -113,6 +123,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/dev-status'
     | '/admin/dev-status'
     | '/admin/login'
     | '/admin/settings'
@@ -124,6 +135,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/dev-status'
     | '/admin/dev-status'
     | '/admin/login'
     | '/admin/settings'
@@ -136,12 +148,20 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  DevStatusRoute: typeof DevStatusRoute
   SettingsShareRoute: typeof SettingsShareRoute
   ThankYouRequestIdRoute: typeof ThankYouRequestIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/dev-status': {
+      id: '/dev-status'
+      path: '/dev-status'
+      fullPath: '/dev-status'
+      preLoaderRoute: typeof DevStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -229,6 +249,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  DevStatusRoute: DevStatusRoute,
   SettingsShareRoute: SettingsShareRoute,
   ThankYouRequestIdRoute: ThankYouRequestIdRoute,
 }
