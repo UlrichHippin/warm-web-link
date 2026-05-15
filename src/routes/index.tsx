@@ -618,17 +618,17 @@ function BookingForm({
         </CardContent>
       </Card>
 
-      <Card className="border-primary/30 bg-primary/5">
+      <Card className="border border-[#65A745]/15 bg-[#65A745]/[0.04]">
         <CardHeader>
           <CardTitle className="text-lg">5 · Estimate</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex items-end justify-between">
             <span className="text-sm text-muted-foreground">Estimated Price</span>
-            <span className="text-3xl font-bold text-primary">
-              {/* I4: hide the numeric estimate when key inputs are unknown
-                  (Not sure / Multiple / Other Area / Urgent) so customers
-                  don't see a misleading low total. */}
+            <span className={cn(
+              "text-3xl font-bold",
+              est.needsConfirmation ? "text-[#1E4B35]" : "text-primary",
+            )}>
               {est.needsConfirmation ? "To be confirmed" : fmtKES(est.estimated_total)}
             </span>
           </div>
