@@ -1,29 +1,64 @@
-import { ChevronRight, type LucideIcon } from "lucide-react";
+import { Check, type LucideIcon } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 
 interface Props {
   Icon: LucideIcon;
   title: string;
   description: string;
   priceHint: string;
+  selected?: boolean;
   onSelect: () => void;
 }
 
-export function ServiceCard({ Icon, title, description, priceHint, onSelect }: Props) {
+export function ServiceCard({
+  Icon,
+  title,
+  description,
+  priceHint,
+  selected = false,
+  onSelect,
+}: Props) {
   return (
     <button
       type="button"
       onClick={onSelect}
-      className="group flex w-full items-center gap-4 rounded-2xl bg-card p-4 text-left shadow-[var(--shadow-soft)] transition-all hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      aria-pressed={selected}
+      className={cn(
+        "group flex w-full items-center gap-4 rounded-2xl bg-card p-6 text-left transition-all",
+        "shadow-[0_4px_16px_-6px_rgb(15_23_42/0.08)] hover:-translate-y-0.5 hover:shadow-[0_10px_28px_-12px_rgb(15_23_42/0.14)]",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+        selected &&
+          "ring-2 ring-primary shadow-[0_8px_24px_-10px_color-mix(in_oklab,var(--brand-lime)_45%,transparent)]",
+      )}
     >
-      <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-accent">
-        <Icon className="h-6 w-6 text-foreground" strokeWidth={2.25} />
-      </div>
+      <Icon
+        className="h-6 w-6 shrink-0 text-foreground"
+        strokeWidth={2}
+        aria-hidden="true"
+      />
+
       <div className="min-w-0 flex-1">
-        <p className="font-semibold text-foreground">{title}</p>
-        <p className="truncate text-xs text-muted-foreground">{description}</p>
-        <p className="mt-1 text-xs font-medium text-primary">{priceHint}</p>
+        <p className="text-base font-bold leading-tight text-foreground">
+          <span>{title}</span>
+          <span className="text-foreground/70"> · {priceHint}</span>
+        </p>
+        <p className="mt-1.5 text-sm leading-snug text-muted-foreground">
+          {description}
+        </p>
       </div>
-      <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+
+      <span
+        className={cn(
+          "grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 transition-colors",
+          selected
+            ? "border-primary bg-primary text-primary-foreground"
+            : "border-primary/40 bg-transparent group-hover:border-primary",
+        )}
+        aria-hidden="true"
+      >
+        {selected ? <Check className="h-4 w-4" strokeWidth={3} /> : null}
+      </span>
     </button>
   );
 }
