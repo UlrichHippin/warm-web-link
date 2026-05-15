@@ -647,9 +647,10 @@ function BookingForm({
                   const trigger = e.currentTarget;
                   const el = document.getElementById("service-details");
                   if (!el) return;
-                  const reduceMotion = window.matchMedia(
-                    "(prefers-reduced-motion: reduce)",
-                  ).matches;
+                  const reduceMotion =
+                    typeof window !== "undefined" &&
+                    typeof window.matchMedia === "function" &&
+                    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
                   el.scrollIntoView({
                     behavior: reduceMotion ? "auto" : "smooth",
                     block: "start",
