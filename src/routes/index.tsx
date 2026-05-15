@@ -146,7 +146,17 @@ function PublicBookingPage() {
   );
 }
 
-function BookingForm({ step, setStep }: { step: Step; setStep: (s: Step) => void }) {
+function BookingForm({
+  step,
+  setStep,
+  presetPackage,
+  onPresetApplied,
+}: {
+  step: Step;
+  setStep: (s: Step) => void;
+  presetPackage?: string | null;
+  onPresetApplied?: () => void;
+}) {
   const navigate = useNavigate();
   const [photoUploading, setPhotoUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -193,6 +203,19 @@ function BookingForm({ step, setStep }: { step: Step; setStep: (s: Step) => void
   useEffect(() => {
     if (step === "review") window.scrollTo({ top: 0, behavior: "smooth" });
   }, [step]);
+
+  // Apply a preset package coming from the service cards above the form.
+  useEffect(() => {
+    if (presetPackage && CLEANING_PACKAGES.includes(presetPackage as (typeof CLEANING_PACKAGES)[number])) {
+      form.setValue(
+        "cleaning_package",
+        presetPackage as BookingFormValues["cleaning_package"],
+        { shouldValidate: true },
+      );
+      onPresetApplied?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [presetPackage]);
 
   const handlePhoto = async (file: File | null) => {
     if (!file) return;
