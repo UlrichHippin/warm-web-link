@@ -113,7 +113,7 @@ export function StickyWhatsAppBar({
             <MessageCircle className="h-6 w-6" strokeWidth={2.5} />
           </a>
         </TooltipTrigger>
-        <TooltipContent id={tooltipId} side="left" sideOffset={8}>
+        <TooltipContent id={tooltipId} role="tooltip" side="left" sideOffset={8}>
           <p className="font-semibold">WhatsApp öffnen</p>
           {selectedService ? (
             <p className="mt-0.5 text-xs opacity-80">Service: {selectedService}</p>
