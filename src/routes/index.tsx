@@ -481,7 +481,10 @@ function BookingForm({
         </CardContent>
       </Card>
 
-      <Card id="service-details">
+      <Card
+        id="service-details"
+        className="scroll-mt-4 outline-none focus-visible:ring-2 focus-visible:ring-[#1E4B35] focus-visible:ring-offset-2"
+      >
 
         <CardHeader>
           <CardTitle className="text-lg">3 · Service Details</CardTitle>
