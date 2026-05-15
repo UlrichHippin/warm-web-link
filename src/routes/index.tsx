@@ -120,7 +120,7 @@ function PublicBookingPage() {
               title={s.title}
               description={s.description}
               priceHint={s.priceHint}
-              onSelect={() => handleServiceSelect(s.package)}
+              onSelect={() => handleServiceSelect(s.package, s.title)}
             />
           ))}
         </div>
