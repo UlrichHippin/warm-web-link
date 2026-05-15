@@ -16,6 +16,7 @@ import { Route as ThankYouRequestIdRouteImport } from './routes/thank-you.$reque
 import { Route as SettingsShareRouteImport } from './routes/settings.share'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminDevStatusRouteImport } from './routes/admin.dev-status'
 import { Route as AdminBookingsRequestIdRouteImport } from './routes/admin.bookings.$requestId'
 
 const AdminRoute = AdminRouteImport.update({
@@ -53,6 +54,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminDevStatusRoute = AdminDevStatusRouteImport.update({
+  id: '/dev-status',
+  path: '/dev-status',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminBookingsRequestIdRoute = AdminBookingsRequestIdRouteImport.update({
   id: '/bookings/$requestId',
   path: '/bookings/$requestId',
@@ -62,6 +68,7 @@ const AdminBookingsRequestIdRoute = AdminBookingsRequestIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/admin/dev-status': typeof AdminDevStatusRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/settings/share': typeof SettingsShareRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin/dev-status': typeof AdminDevStatusRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/settings/share': typeof SettingsShareRoute
@@ -82,6 +90,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/admin/dev-status': typeof AdminDevStatusRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/settings/share': typeof SettingsShareRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/admin/dev-status'
     | '/admin/login'
     | '/admin/settings'
     | '/settings/share'
@@ -103,6 +113,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin/dev-status'
     | '/admin/login'
     | '/admin/settings'
     | '/settings/share'
@@ -113,6 +124,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/admin/dev-status'
     | '/admin/login'
     | '/admin/settings'
     | '/settings/share'
@@ -179,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/dev-status': {
+      id: '/admin/dev-status'
+      path: '/dev-status'
+      fullPath: '/admin/dev-status'
+      preLoaderRoute: typeof AdminDevStatusRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/bookings/$requestId': {
       id: '/admin/bookings/$requestId'
       path: '/bookings/$requestId'
@@ -190,6 +209,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminDevStatusRoute: typeof AdminDevStatusRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -197,6 +217,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminDevStatusRoute: AdminDevStatusRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -214,3 +235,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
