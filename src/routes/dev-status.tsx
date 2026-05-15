@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { RequireAdmin } from "./admin";
 
-const REPO_URL = "https://github.com/UlrichHippin/warm-web-link";
+const REPO_URL = "https://github.com/UlrichHippin/freshdream-booking";
 
 export const Route = createFileRoute("/dev-status")({
   component: () => (
