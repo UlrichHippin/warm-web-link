@@ -481,7 +481,10 @@ function BookingForm({
         </CardContent>
       </Card>
 
-      <Card id="service-details">
+      <Card
+        id="service-details"
+        className="scroll-mt-4 outline-none focus-visible:ring-2 focus-visible:ring-[#1E4B35] focus-visible:ring-offset-2"
+      >
 
         <CardHeader>
           <CardTitle className="text-lg">3 · Service Details</CardTitle>
@@ -640,9 +643,11 @@ function BookingForm({
                   if (!el) return;
                   el.scrollIntoView({ behavior: "smooth", block: "start" });
                   el.classList.remove("flash-highlight");
-                  // restart animation
                   void el.offsetWidth;
                   el.classList.add("flash-highlight");
+                  // make the card focusable and move keyboard focus to it
+                  if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+                  el.focus({ preventScroll: true });
                   window.setTimeout(() => el.classList.remove("flash-highlight"), 1400);
                 }}
                 className="font-semibold text-[#1E4B35] underline underline-offset-2 hover:text-[#65A745]"
