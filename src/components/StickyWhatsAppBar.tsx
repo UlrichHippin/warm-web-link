@@ -99,6 +99,7 @@ export function StickyWhatsAppBar({
             aria-describedby={open ? tooltipId : undefined}
             onPointerDown={handlePointerDown}
             onClick={handleClick}
+            onKeyDown={handleKeyDown}
             onMouseEnter={() => {
               if (!isTouchRef.current) setOpen(true);
             }}
