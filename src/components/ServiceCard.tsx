@@ -33,15 +33,15 @@ export function ServiceCard({
       )}
     >
       <Icon
-        className="h-6 w-6 shrink-0 text-foreground"
+        className="h-6 w-6 shrink-0 text-[#1E4B35]"
         strokeWidth={2}
         aria-hidden="true"
       />
 
       <div className="min-w-0 flex-1">
-        <p className="text-base font-bold leading-tight text-foreground">
+        <p className="text-base font-bold leading-tight text-[#1E4B35]">
           <span>{title}</span>
-          <span className="text-foreground/70"> · {priceHint}</span>
+          <span className="text-[#1E4B35]/70"> · {priceHint}</span>
         </p>
         <p className="mt-1.5 text-sm leading-snug text-muted-foreground">
           {description}
