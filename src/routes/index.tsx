@@ -167,6 +167,7 @@ function PublicBookingPage() {
           setStep={setStep}
           presetPackage={pendingPackage}
           onPresetApplied={() => setPendingPackage(null)}
+          onFormStart={() => setHasStartedBooking(true)}
         />
       </main>
 
@@ -174,7 +175,7 @@ function PublicBookingPage() {
         © {new Date().getFullYear()} FreshDream Mattress Care · Nairobi
       </footer>
 
-      <StickyWhatsAppBar selectedService={selectedServiceTitle} />
+      {showStickyWhatsApp && <StickyWhatsAppBar selectedService={selectedServiceTitle} />}
     </div>
   );
 }
@@ -184,11 +185,13 @@ function BookingForm({
   setStep,
   presetPackage,
   onPresetApplied,
+  onFormStart,
 }: {
   step: Step;
   setStep: (s: Step) => void;
   presetPackage?: string | null;
   onPresetApplied?: () => void;
+  onFormStart?: () => void;
 }) {
   const navigate = useNavigate();
   const [photoUploading, setPhotoUploading] = useState(false);
