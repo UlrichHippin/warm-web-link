@@ -398,7 +398,11 @@ function BookingForm({
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+    <form
+      className="space-y-6"
+      onSubmit={(e) => e.preventDefault()}
+      onFocusCapture={() => onFormStart?.()}
+    >
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">1 · Customer Details</CardTitle>
