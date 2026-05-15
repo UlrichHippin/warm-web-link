@@ -143,7 +143,7 @@ function PublicBookingPage() {
         © {new Date().getFullYear()} FreshDream Mattress Care · Nairobi
       </footer>
 
-      <StickyWhatsAppBar />
+      <StickyWhatsAppBar selectedService={selectedServiceTitle} />
     </div>
   );
 }
