@@ -648,7 +648,13 @@ function BookingForm({
         </CardContent>
       </Card>
 
-      <Button type="button" size="lg" className="w-full" onClick={goReview}>
+      <Button
+        type="button"
+        size="lg"
+        variant="outline"
+        className="w-full bg-white border-2 border-[#1E4B35] text-[#1E4B35] hover:bg-[#1E4B35]/5 hover:text-[#1E4B35]"
+        onClick={goReview}
+      >
         Review Booking Request
       </Button>
     </form>
