@@ -37,6 +37,7 @@ export function StickyWhatsAppBar({
           <MessageCircle className="h-5 w-5" strokeWidth={2.5} />
           {label}
         </a>
+      </div>
     </div>
   );
 }
