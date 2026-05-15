@@ -28,6 +28,49 @@ export const CLEANING_PACKAGES = [
   "Host / Multiple Mattress Request – price confirmed after review",
 ] as const;
 
+/**
+ * Public service cards shown on the homepage above the booking form.
+ * Each card maps to one CLEANING_PACKAGES value so tapping a card
+ * pre-selects the package in the form.
+ */
+export const SERVICES: Array<{
+  id: string;
+  title: string;
+  description: string;
+  priceHint: string;
+  package: (typeof CLEANING_PACKAGES)[number];
+}> = [
+  {
+    id: "freshen",
+    title: "Deep Dust Refresh",
+    description: "Surface dust, allergens & freshening treatment.",
+    priceHint: "from KES 1,999",
+    package: "Freshen Up Mattress Refresh – from KES 1,999",
+  },
+  {
+    id: "deep",
+    title: "Stain & Odor Treatment",
+    description: "Deep mattress refresh with targeted stain care.",
+    priceHint: "from KES 2,499",
+    package: "Deep Mattress Refresh – from KES 2,499",
+  },
+  {
+    id: "airbnb",
+    title: "Airbnb Turnover",
+    description: "Same-day mattress refresh between guests.",
+    priceHint: "from KES 2,999",
+    package: "Airbnb Turnover Mattress Refresh – from KES 2,999",
+  },
+  {
+    id: "multi",
+    title: "Multi-Mattress / Host",
+    description: "Bulk pricing for hotels, hosts and guesthouses.",
+    priceHint: "price on review",
+    package: "Host / Multiple Mattress Request – price confirmed after review",
+  },
+];
+
+
 export const MATTRESS_SIZES = [
   "Single – KES 1,999",
   "Double – KES 2,299",

@@ -127,7 +127,7 @@ function ThankYou() {
         )}
 
         <a href={wa} target="_blank" rel="noopener noreferrer" className="mt-6 block">
-          <Button size="lg" className="w-full bg-[#25D366] hover:bg-[#25D366]/90">
+          <Button size="lg" className="w-full rounded-2xl">
             <MessageCircle className="mr-2 h-5 w-5" />
             Send Request ID on WhatsApp
           </Button>
