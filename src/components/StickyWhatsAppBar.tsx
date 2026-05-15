@@ -66,6 +66,21 @@ export function StickyWhatsAppBar({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLAnchorElement>) => {
+    if (e.key === " ") {
+      e.preventDefault();
+      setOpen((prev) => !prev);
+    } else if (e.key === "Escape") {
+      if (open) {
+        e.stopPropagation();
+        setOpen(false);
+      }
+    } else if (e.key === "Enter") {
+      // Link wird nativ aktiviert; Tooltip vorher schließen, damit aria-expanded korrekt ist
+      setOpen(false);
+    }
+  };
+
   const tooltipId = "whatsapp-fab-tooltip";
 
   return (
