@@ -1,130 +1,84 @@
+# FreshDream Redesign Plan
 
-# FreshDream Booking Request — Build Plan
+A complete visual overhaul of the booking app: pure-white, airy, mobile-first, with Dark Forest Green typography, Lime Green CTAs, and a Clean Blue location/trust accent. The detailed booking form stays fully functional — only its styling and surrounding structure change. Admin pages adopt the same tokens for a consistent brand.
 
-A standalone booking-request web app for FreshDream Mattress Care (Nairobi), wired to **your own Supabase project** (not Lovable Cloud) and using **Resend** (via the Lovable connector) for admin email notifications.
+## 1. Design tokens (`src/styles.css`)
 
----
+Replace the current oklch palette with the FreshDream system:
 
-## What you'll need to do (3 things, all guided)
+- `--background`: #FFFFFF (pure white)
+- `--foreground`: #1E4B35 (dark forest green) — all primary text/headers
+- `--primary`: #65A745 (vibrant lime/leaf) — CTAs, accents
+- `--primary-foreground`: #FFFFFF
+- `--secondary` / accent for trust + "Nairobi": #1D70B8 (clean blue)
+- `--muted-foreground`: soft slate-green for body copy
+- `--border`: very light green-tinted gray
+- `--radius`: bump to `1rem` so cards/buttons land at `rounded-2xl`
+- Add `--shadow-soft` and `--gradient-leaf` tokens for the subtle background swooshes
+- Dark mode: keep tokens but desaturate; no explicit dark-mode designs requested, so we mirror the light theme respectfully
 
-1. **Add 2 secrets** when prompted: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (from your Supabase project → Settings → API).
-2. **Connect Resend** when prompted (one click — links your Resend account so the app can send admin emails).
-3. **Run one SQL script** I'll generate, in your Supabase SQL Editor. It creates the table, the storage bucket, the user_roles table, and all RLS policies. Then create your admin user in Supabase Auth → Users and assign the `admin` role with one provided SQL line.
+Typography: load **Inter** via `<link>` in `__root.tsx` head (variable weights), set as default sans in `styles.css`. Headings use weight 800, tight tracking.
 
-I will *not* enable Lovable Cloud and *not* create any Lovable database tables.
+## 2. Hero image
 
----
+Generate one premium asset with the image tool:
 
-## Pages
+- Path: `src/assets/hero-mattress.jpg`
+- Prompt: bright, sunlit, perfectly white tufted mattress on a clean linen platform, soft natural light, airy bedroom, minimalist, photographic, 1600×1200
+- Used as a soft, right-aligned hero image with white-to-transparent gradient overlay so headings stay legible on mobile
 
-| Route | Purpose |
-|---|---|
-| `/` | Public booking page (hero + multi-section form + live estimate + review step) |
-| `/thank-you/:requestId` | Confirmation page with summary + WhatsApp CTA |
-| `/admin/login` | Supabase Auth email/password login |
-| `/admin` | Protected dashboard (list + filters + status cards) |
-| `/admin/bookings/:requestId` | Booking detail + status updates + WhatsApp quick-actions |
-| `/admin/settings` | Share/embed instructions (link, iframe, WhatsApp link, homepage button copy) |
+## 3. Homepage structure (`src/routes/index.tsx`)
 
-Routes are TanStack Start file-routes. `/admin/*` lives under an `_authenticated` layout that checks Supabase session + the `admin` role, redirecting to `/admin/login` otherwise.
+Top → bottom (mobile-first, single column, generous whitespace):
 
----
+1. **Header** — centered "FreshDream" wordmark in dark forest green with a small inline `Leaf` icon; under it, a tiny `MapPin` + "Nairobi" chip in clean blue. Transparent background, no border.
+2. **Hero** — H1 "FreshDream Booking" (extra-large, bold, forest green); subhead "Professional mattress cleaning in minutes." Hero mattress image behind/aside with white gradient. Subtle lime swoosh SVG bottom-right.
+3. **Trust banner** — 3 minimal icon+label tiles in a horizontal row: Safe (Leaf), Deep Clean (Shield), Fresh (Wind). Forest-green icons, blue underline accents.
+4. **Service selection** — vertical stack of white `rounded-2xl` cards with soft shadow. Each card: icon, title, one-line description, small "from KES …" hint, chevron. Tapping a card scrolls to the form and pre-selects the matching package. Defaults (since you didn't specify): Deep Dust Refresh, Stain & Odor Treatment, Airbnb Turnover, Allergen Sanitization, Multi-Mattress / Host.
+5. **Booking form** — same fields, schema, and Supabase submission as today; restyled with the new tokens (rounded-2xl inputs, lime focus ring, forest-green labels, generous spacing). Live price estimate card uses lime accent.
+6. **Footer** — minimal contact strip (WhatsApp number, email, hours).
+7. **Sticky bottom bar** — fixed full-width lime CTA "Book via WhatsApp" using the existing `createWhatsAppUrl()` helper (wa.me, opens via `target="_blank" rel="noopener noreferrer"` — already correct). Adds bottom padding to the page so content isn't hidden behind it. Hidden on `/admin*` routes.
 
-## Public booking form
+No business logic changes: validation, estimate calculation, Supabase insert, request-ID generation, thank-you redirect — all unchanged.
 
-Sections built exactly as specified:
+## 4. Other customer pages
 
-1. Customer details (name, WhatsApp, email, property type)
-2. Location (address textarea, area/zone select with prices in labels)
-3. Service (package, mattress size, count, add-ons multi-select, notes, photo upload)
-4. Schedule (date, time window)
-5. Live estimate panel — recalculates as the user changes fields, using the pricing table below
-6. Review summary + consent checkbox + submit
+- `src/routes/thank-you.$requestId.tsx` — restyled with same tokens, big lime check icon, forest-green confirmation text, prominent "Open WhatsApp" button.
+- `src/routes/admin.login.tsx` — clean white card on white bg, lime CTA, forest-green branding.
 
-**Pricing logic** (computed client-side and re-validated server-side before insert):
+## 5. Admin app (token-only restyle)
 
-```text
-mattress_price: Single 1999, Double 2299, Queen 2499, King 2999, Not sure 0, Multiple 0
-location_fee:   Zone A 300, Zone B 500, Zone C 800, Other 0
-addons_price:   Sleep Area Dust 300, Extra Pillow 200, Stain Photo 0, Urgent 0
-estimated_total = mattress_price * number_of_mattresses + location_fee + addons_price
-```
+Apply the new palette to `src/routes/admin.tsx`, `admin.index.tsx`, `admin.bookings.$requestId.tsx`, `admin.settings.tsx`, `settings.share.tsx`. No structural changes, no permission changes, no RLS changes — just:
 
-Disclaimer + "Not sure / Multiple / Other" warning banners shown per spec. Form validated with `zod` + `react-hook-form`. Mobile-first layout, soft cards, large tap targets.
+- Replace any hardcoded colors with semantic tokens
+- Cards use `rounded-2xl`
+- Primary buttons inherit lime; destructive stays red
+- Status badges keep their semantic colors but are recolored to harmonize with the new palette
+- Sticky WhatsApp bar is **not** rendered in the admin layout
 
-**Photo upload** goes to Supabase Storage bucket `booking-photos` (public-read, anon-insert with size + mime restrictions). The returned public URL is saved as `upload_photo_url`.
+## 6. Files touched
 
----
+- `src/styles.css` — new token values, radius bump, font-family
+- `src/routes/__root.tsx` — Inter font link, default meta
+- `src/routes/index.tsx` — full restructure (header, hero, trust, services, form, sticky bar)
+- `src/routes/thank-you.$requestId.tsx` — restyle
+- `src/routes/admin.login.tsx` — restyle
+- `src/routes/admin.tsx`, `admin.index.tsx`, `admin.bookings.$requestId.tsx`, `admin.settings.tsx`, `settings.share.tsx` — token cleanup, rounded-2xl, button variants
+- `src/lib/booking.ts` — add a `SERVICES` array (id, label, icon, package mapping) to power the service cards; no changes to schema/estimate
+- New: `src/components/StickyWhatsAppBar.tsx`, `src/components/TrustBanner.tsx`, `src/components/ServiceCard.tsx`, `src/components/SiteHeader.tsx`
+- New asset: `src/assets/hero-mattress.jpg` (generated)
 
-## Submission flow
+## 7. Out of scope (unchanged)
 
-1. Client validates with zod, recomputes the estimate, generates `request_id` = `FD-YYYYMMDD-XXXX` (4-char alphanumeric).
-2. Client `INSERT`s into `booking_requests` using the anon key (allowed by RLS public-insert policy).
-3. Client calls a TanStack server function `notifyNewBooking({ requestId })` which:
-   - Reads the row from Supabase using a server-side client (anon key + a permissive `select` policy scoped to a one-time fetch by id, OR the row payload is passed in directly — I'll pass the row directly to avoid loosening RLS).
-   - Sends the admin email to `bookings@freshdream.co.ke` via the Resend gateway using the project's `LOVABLE_API_KEY` + `RESEND_API_KEY` (gateway handles auth).
-4. Customer is redirected to `/thank-you/:requestId` showing the full summary and a big WhatsApp button:
-   `https://wa.me/254708835235?text=<URL-encoded pre-filled message>`.
+- Supabase schema, RLS, admin/operator roles
+- WhatsApp helper (`waLink`, `createWhatsAppUrl`) — already wa.me-correct
+- Booking submission logic, validation, estimate math
+- Routing structure / route guards
 
-(Customer confirmation email is included as well, sent in the same server function.)
+## Technical details
 
----
-
-## Admin dashboard
-
-- **Auth**: Supabase email/password. `_authenticated` layout calls `supabase.auth.getUser()` in `beforeLoad`; if missing or user lacks `admin` role, redirect to `/admin/login`.
-- **List**: TanStack Query reads `booking_requests` ordered by `created_at desc`. Columns per spec.
-- **Filters**: name / phone / request_id search (debounced `ilike`), status / payment_status / appointment_status selects, preferred_date date picker.
-- **Status cards** at top: counts for New, Confirmed, Awaiting Payment, Scheduled, Completed, Cancelled (computed via `count` queries with filters).
-- **Detail page**: full record view, editable selects for `status` / `payment_status` / `appointment_status` and a textarea for `internal_notes`. Saves update Supabase and stamp `admin_last_updated_at = now()`.
-- **Quick WhatsApp actions** (4 buttons per spec): each opens `https://wa.me/<customer>?text=<encoded message template>` with the customer's data interpolated. The "Request Payment" message has an inline input for `final_price` before opening WhatsApp.
-
----
-
-## Settings / Instructions page
-
-Static content with copy-to-clipboard buttons for:
-- Public booking URL
-- Homepage button HTML snippet
-- iframe embed snippet
-- Pre-filled WhatsApp link
-
-URLs use `window.location.origin` so they're correct in dev, preview, and production.
-
----
-
-## Database schema (you will run this in Supabase SQL Editor)
-
-Single SQL script I'll generate creates:
-
-- `app_role` enum (`admin`)
-- `public.user_roles` table + `public.has_role(uuid, app_role)` SECURITY DEFINER function
-- `public.booking_requests` table with all 24 fields exactly as specified, defaults, and an `updated_at` trigger
-- Storage bucket `booking-photos` (public read)
-- **RLS policies**:
-  - `booking_requests`: `INSERT` allowed for `anon` + `authenticated`; `SELECT/UPDATE/DELETE` only when `has_role(auth.uid(), 'admin')`
-  - `user_roles`: only admins can read/write; users can read their own roles
-  - `storage.objects` for `booking-photos`: anon `INSERT` (with mime + size guard via bucket config), public `SELECT`, admin `DELETE`
-
-After running it, you'll create your admin user in Supabase Auth → Users, then run a one-line snippet I'll provide:
-```sql
-insert into public.user_roles (user_id, role) values ('<your-user-id>', 'admin');
-```
-
----
-
-## Tech details (for reference)
-
-- **Stack**: TanStack Start (already configured), `@supabase/supabase-js`, `react-hook-form` + `zod`, TanStack Query, shadcn/ui (already installed), Tailwind v4 with semantic tokens for the FreshDream palette.
-- **Design tokens** added in `src/styles.css`: `--primary` fresh green, `--accent` soft teal, neutral whites/greys. All components use semantic classes (no hardcoded colors).
-- **Supabase client**: thin wrapper at `src/integrations/supabase/client.ts` reading `import.meta.env.VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. No `.server.ts` admin client — no service role key in the project.
-- **Server function**: `src/lib/notifications.functions.ts` — sends admin + customer emails through the Resend gateway. No Supabase access from the server (avoids needing service role).
-- **Files I will create** (high level): `src/integrations/supabase/client.ts`, `src/lib/booking.ts` (pricing + zod schemas + request id), `src/lib/notifications.functions.ts`, `src/components/booking/*`, `src/components/admin/*`, route files for each page above, `src/hooks/useAuth.ts`, and `supabase-setup.sql` at the repo root with the schema script for you to run.
-
----
-
-## Out of scope (per your instructions)
-
-- No online payment collection.
-- No Lovable Cloud / no Lovable database tables / no Lovable storage.
-- No exposure of service role keys.
+- Tailwind v4 tokens in `oklch()` (project rule); hex values from the brief converted to oklch equivalents.
+- Sticky bar implemented with `fixed inset-x-0 bottom-0 z-40` + `pb-[calc(env(safe-area-inset-bottom)+88px)]` on the page wrapper to avoid content overlap on iOS.
+- Service card → form pre-select via a small `useState` + `scrollIntoView({behavior:"smooth"})` call.
+- Hero image imported as ES6 module (`import hero from "@/assets/hero-mattress.jpg"`).
+- All new components are presentational — no new data fetching, no new server functions.
