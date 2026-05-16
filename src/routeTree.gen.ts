@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ThankYouRequestIdRouteImport } from './routes/thank-you.$requestId'
 import { Route as SettingsShareRouteImport } from './routes/settings.share'
+import { Route as AdminSmokeTestRouteImport } from './routes/admin.smoke-test'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDevStatusRouteImport } from './routes/admin.dev-status'
@@ -50,6 +51,11 @@ const SettingsShareRoute = SettingsShareRouteImport.update({
   path: '/settings/share',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSmokeTestRoute = AdminSmokeTestRouteImport.update({
+  id: '/smoke-test',
+  path: '/smoke-test',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/admin/dev-status': typeof AdminDevStatusRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/smoke-test': typeof AdminSmokeTestRoute
   '/settings/share': typeof SettingsShareRoute
   '/thank-you/$requestId': typeof ThankYouRequestIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/admin/dev-status': typeof AdminDevStatusRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/smoke-test': typeof AdminSmokeTestRoute
   '/settings/share': typeof SettingsShareRoute
   '/thank-you/$requestId': typeof ThankYouRequestIdRoute
   '/admin': typeof AdminIndexRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/admin/dev-status': typeof AdminDevStatusRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/smoke-test': typeof AdminSmokeTestRoute
   '/settings/share': typeof SettingsShareRoute
   '/thank-you/$requestId': typeof ThankYouRequestIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/admin/dev-status'
     | '/admin/login'
     | '/admin/settings'
+    | '/admin/smoke-test'
     | '/settings/share'
     | '/thank-you/$requestId'
     | '/admin/'
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/admin/dev-status'
     | '/admin/login'
     | '/admin/settings'
+    | '/admin/smoke-test'
     | '/settings/share'
     | '/thank-you/$requestId'
     | '/admin'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/admin/dev-status'
     | '/admin/login'
     | '/admin/settings'
+    | '/admin/smoke-test'
     | '/settings/share'
     | '/thank-you/$requestId'
     | '/admin/'
@@ -197,6 +209,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsShareRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/smoke-test': {
+      id: '/admin/smoke-test'
+      path: '/smoke-test'
+      fullPath: '/admin/smoke-test'
+      preLoaderRoute: typeof AdminSmokeTestRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/settings': {
       id: '/admin/settings'
       path: '/settings'
@@ -232,6 +251,7 @@ interface AdminRouteChildren {
   AdminDevStatusRoute: typeof AdminDevStatusRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminSmokeTestRoute: typeof AdminSmokeTestRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminBookingsRequestIdRoute: typeof AdminBookingsRequestIdRoute
 }
@@ -240,6 +260,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminDevStatusRoute: AdminDevStatusRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminSettingsRoute: AdminSettingsRoute,
+  AdminSmokeTestRoute: AdminSmokeTestRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminBookingsRequestIdRoute: AdminBookingsRequestIdRoute,
 }
