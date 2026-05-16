@@ -276,8 +276,9 @@ function BookingForm({
         .from("booking-photos")
         .upload(path, file, { upsert: false, contentType: file.type });
       if (error) throw error;
-      const { data } = supabase.storage.from("booking-photos").getPublicUrl(path);
-      form.setValue("upload_photo_url", data.publicUrl, { shouldValidate: true });
+      // Store the object PATH only — the bucket is private and the admin UI
+      // resolves a short-lived signed URL when displaying the image.
+      form.setValue("upload_photo_url", path, { shouldValidate: true });
       toast.success("Photo uploaded");
     } catch (e) {
       console.error("[FreshDream] Photo upload failed:", e);
@@ -329,6 +330,8 @@ function BookingForm({
         number_of_mattresses: values.number_of_mattresses,
         addons: values.addons,
       });
+      // Pricing + status fields are computed server-side by a BEFORE INSERT
+      // trigger; never send them from the client (anyone could spoof them).
       const { error } = await supabase.from("booking_requests").insert({
         request_id: requestId,
         full_name: values.full_name,
@@ -345,10 +348,6 @@ function BookingForm({
         preferred_date: values.preferred_date,
         preferred_time_window: values.preferred_time_window,
         upload_photo_url: values.upload_photo_url || null,
-        mattress_price: finalEst.mattress_price,
-        location_fee: finalEst.location_fee,
-        addons_price: finalEst.addons_price,
-        estimated_total: finalEst.estimated_total,
       });
       if (error) throw error;
       // Cache for the thank-you page (public RLS forbids reading bookings).

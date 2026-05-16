@@ -238,22 +238,7 @@ Thank you for choosing FreshDream Mattress Care. We would appreciate your feedba
                 <Row k="Add-ons price" v={fmtKES(booking.addons_price)} />
                 <Row k="Estimated total" v={fmtKES(booking.estimated_total)} bold />
                 {booking.upload_photo_url && (
-                  <div className="sm:col-span-2">
-                    <p className="mb-2 text-xs text-muted-foreground">Photo</p>
-                    <a
-                      href={booking.upload_photo_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-primary hover:underline"
-                    >
-                      <ExternalLink className="h-3 w-3" /> Open photo
-                    </a>
-                    <img
-                      src={booking.upload_photo_url}
-                      alt="Mattress photo"
-                      className="mt-2 max-h-72 rounded-md border"
-                    />
-                  </div>
+                  <BookingPhoto path={booking.upload_photo_url} />
                 )}
                 <Row
                   k="Submitted"
@@ -433,6 +418,59 @@ function Row({
       <p className={`break-words ${bold ? "text-base font-bold text-primary" : "font-medium"}`}>
         {v ?? "—"}
       </p>
+    </div>
+  );
+}
+
+function BookingPhoto({ path }: { path: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    // Bucket is private — resolve a short-lived signed URL for display.
+    supabase.storage
+      .from("booking-photos")
+      .createSignedUrl(path, 3600)
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error || !data?.signedUrl) {
+          setErr("Could not load photo");
+          return;
+        }
+        setUrl(data.signedUrl);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [path]);
+
+  return (
+    <div className="sm:col-span-2">
+      <p className="mb-2 text-xs text-muted-foreground">Photo</p>
+      {err ? (
+        <p className="text-sm text-destructive">{err}</p>
+      ) : !url ? (
+        <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-3 w-3 animate-spin" /> Loading photo…
+        </p>
+      ) : (
+        <>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-primary hover:underline"
+          >
+            <ExternalLink className="h-3 w-3" /> Open photo
+          </a>
+          <img
+            src={url}
+            alt="Mattress photo"
+            className="mt-2 max-h-72 rounded-md border"
+          />
+        </>
+      )}
     </div>
   );
 }
