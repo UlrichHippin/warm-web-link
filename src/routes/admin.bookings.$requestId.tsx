@@ -238,22 +238,7 @@ Thank you for choosing FreshDream Mattress Care. We would appreciate your feedba
                 <Row k="Add-ons price" v={fmtKES(booking.addons_price)} />
                 <Row k="Estimated total" v={fmtKES(booking.estimated_total)} bold />
                 {booking.upload_photo_url && (
-                  <div className="sm:col-span-2">
-                    <p className="mb-2 text-xs text-muted-foreground">Photo</p>
-                    <a
-                      href={booking.upload_photo_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-primary hover:underline"
-                    >
-                      <ExternalLink className="h-3 w-3" /> Open photo
-                    </a>
-                    <img
-                      src={booking.upload_photo_url}
-                      alt="Mattress photo"
-                      className="mt-2 max-h-72 rounded-md border"
-                    />
-                  </div>
+                  <BookingPhoto path={booking.upload_photo_url} />
                 )}
                 <Row
                   k="Submitted"
