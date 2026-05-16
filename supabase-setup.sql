@@ -166,7 +166,7 @@ with check (
   and char_length(exact_address) between 5 and 1000
   and (special_notes is null or char_length(special_notes) <= 2000)
   and char_length(email) between 5 and 200
-  and whatsapp_number ~ '^\+[1-9][0-9 ()-]{6,20}$'
+  and whatsapp_number ~ '^[+][1-9][0-9 ()-]{6,20}$'
   and number_of_mattresses between 1 and 50
   and preferred_date >= (current_date - interval '1 day')
   and (addons is null or (jsonb_typeof(addons) = 'array' and jsonb_array_length(addons) <= 10))
