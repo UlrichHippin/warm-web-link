@@ -291,7 +291,14 @@ export const bookingFormSchema = z.object({
     .min(1, "Pick a preferred date")
     .refine((v) => !Number.isNaN(Date.parse(v)), "Pick a valid date"),
   preferred_time_window: z.enum(TIME_WINDOWS, { message: "Select a time window" }),
-  upload_photo_url: z.string().url().optional().or(z.literal("")),
+  // Stored as a storage object PATH (e.g. "1737000000-abc123.jpg"). The
+  // bucket is private; the admin UI resolves a signed URL on demand.
+  upload_photo_url: z
+    .string()
+    .max(255)
+    .regex(/^[A-Za-z0-9._-]+$/, "Invalid photo reference")
+    .optional()
+    .or(z.literal("")),
   consent: z.literal(true, { message: "Please confirm to continue" }),
 });
 
